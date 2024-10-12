@@ -1,0 +1,9 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "concat_space": true,
+        "declare_strict_types": true,
+        "fully_qualified_strict_types": true,
+        "phpdoc_separation": true
+    }
+}
