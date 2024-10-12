@@ -67,8 +67,10 @@ class LaravelModelsGeneratorCommand extends Command
             $columns = $this->getTableColumns($table->getName());
             $indexes = $this->getTableIndexes($table->getName());
 
-            $dbTable = new Table($table->getName());
-            $dbTable->primaryKey = $indexes['primary']->getColumns()[0];
+            $dbTable = new Table($table->getName(), ucfirst(Str::camel(Str::singular($table->getName()))));
+            if (isset($indexes['primary'])) {
+                $dbTable->primaryKey = $indexes['primary']->getColumns()[0];
+            }
             $dbTable->fillable = array_diff(array_keys($columns), ['created_at', 'updated_at', 'deleted_at']);
             if (in_array('password', $dbTable->fillable)) {
                 $dbTable->hidden = ['password'];
@@ -93,11 +95,12 @@ class LaravelModelsGeneratorCommand extends Command
             foreach ($dbTable->belongsTo as $foreignTableName => $belongsTo) {
                 //info('TABLE: '.$dbTable->name);
                 //info(print_r($belongsTo->foreignKey, true));
-                $localKeyName = $belongsTo->foreignKey->getLocalColumns()[0];
+                $foreignKeyName = $belongsTo->foreignKey->getLocalColumns()[0];
+                $localKeyName = $belongsTo->foreignKey->getForeignColumns()[0];
                 if ($localKeyName == $dbTables[$foreignTableName]->primaryKey) {
                     $localKeyName = null;
                 }
-                $dbTables[$foreignTableName]->hasMany[] = new HasMany($dbTable->name, $belongsTo->foreignKey->getForeignColumns()[0], $localKeyName);
+                $dbTables[$foreignTableName]->hasMany[] = new HasMany($dbTable->className, $foreignKeyName, $localKeyName);
 
                 if (count($dbTable->belongsTo) > 1) {
                     foreach ($dbTable->belongsTo as $subForeignTableName => $subBelongsTo) {
@@ -145,9 +148,8 @@ class LaravelModelsGeneratorCommand extends Command
         $fileSystem = new Filesystem;
 
         foreach ($dbTables as $dbTable) {
-            $className = ucfirst(Str::camel($dbTable->name));
-            $fileName = $className.'.php';
-            $fileSystem->put(app_path('Models'.DIRECTORY_SEPARATOR.$fileName), $this->modelContent($className, $dbTable));
+            $fileName = $dbTable->className.'.php';
+            $fileSystem->put(app_path('Models'.DIRECTORY_SEPARATOR.$fileName), $this->modelContent($dbTable->className, $dbTable));
         }
         $this->info('Check out your models');
 
@@ -247,7 +249,7 @@ class LaravelModelsGeneratorCommand extends Command
 
         foreach ($dbTable->belongsTo as $belongsTo) {
             $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
-            $foreignClassName = ucfirst(Str::camel($belongsTo->foreignKey->getForeignTableName()));
+            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName())));
             $foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
             $body .= '
     public function '.$relationName.'(): BelongsTo
@@ -269,7 +271,7 @@ class LaravelModelsGeneratorCommand extends Command
                 $relationName = Str::camel(str_replace("{$dbTable->name}_", '', $belongsToMany->pivot).'_'.Str::plural($related));
             }
 
-            $foreignClassName = ucfirst(Str::camel($belongsToMany->related));
+            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsToMany->related)));
             //$foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
             $body .= '
     public function '.$relationName.'(): BelongsToMany

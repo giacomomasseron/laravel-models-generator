@@ -42,5 +42,5 @@ class Table
 
     public string $primaryKey = 'id';
 
-    public function __construct(public string $name) {}
+    public function __construct(public string $name, public string $className) {}
 }
