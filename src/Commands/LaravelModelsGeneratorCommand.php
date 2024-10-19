@@ -175,8 +175,6 @@ class LaravelModelsGeneratorCommand extends Command
         }
         $this->info('Check out your models');
 
-        //info(print_r($dbTables, true));
-
         return self::SUCCESS;
     }
 
@@ -206,7 +204,7 @@ class LaravelModelsGeneratorCommand extends Command
     private function modelContent(string $className, Table $dbTable): string
     {
         $content = file_get_contents($this->getStub());
-        $namespace = 'App\Models';
+        $namespace = config('models-generator.namespace', 'App\Models');
         $arImports = [
             'use Illuminate\Database\Eloquent\Model;',
         ];
@@ -219,9 +217,10 @@ class LaravelModelsGeneratorCommand extends Command
             }
 
             $parent .= ' implements '.implode(', ', array_map(function ($interface) {
-                    $parts = explode('\\', $interface);
-                    return end($parts);
-                }, config('models-generator.implements')));
+                $parts = explode('\\', $interface);
+
+                return end($parts);
+            }, config('models-generator.implements')));
         }
 
         if (count($dbTable->belongsTo) > 0) {

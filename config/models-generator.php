@@ -10,6 +10,14 @@ return [
             'connection' => true,
             'primary_key' => true,
 
+            'parent' => [
+                Illuminate\Database\Eloquent\Model::class,
+            ],
+
+            'namespace' => [
+                'App\Models',
+            ],
+
             /**
              * [
              *      'table_name' => 'polymorphic_type',
