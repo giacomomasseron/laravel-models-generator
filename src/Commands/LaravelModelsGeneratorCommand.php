@@ -327,7 +327,7 @@ class LaravelModelsGeneratorCommand extends Command
 
         /** @var MorphMany $morphMany */
         foreach ($dbTable->morphMany as $morphMany) {
-                $body .= '
+            $body .= '
     public function '.$morphMany->name.'(): MorphMany
 	{
     	return $this->morphMany('.$morphMany->related.'::class, \''.$morphMany->name.'\');
