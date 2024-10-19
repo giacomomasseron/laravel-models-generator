@@ -25,7 +25,10 @@ use Illuminate\Support\Str;
 
 class LaravelModelsGeneratorCommand extends Command
 {
-    public $signature = 'laravel-models-generator:generate';
+    public $signature = 'laravel-models-generator:generate
+                        {--s|schema= : The name of the database}
+                        {--c|connection= : The name of the connection}
+                        {--t|table= : The name of the table}';
 
     /**
      * The console command description.
@@ -47,10 +50,14 @@ class LaravelModelsGeneratorCommand extends Command
      */
     public function handle(): int
     {
+        $connection = $this->getConnection();
+        $schema = $this->getSchema($connection);
+        $tableToCreate = $this->getTable();
+
         $dbTables = [];
 
         $connectionParams = [
-            'dbname' => config('database.connections.'.config('database.default').'.database'),
+            'dbname' => $schema,
             'user' => config('database.connections.'.config('database.default').'.username'),
             'password' => config('database.connections.'.config('database.default').'.password'),
             'host' => config('database.connections.'.config('database.default').'.host'),
@@ -63,6 +70,12 @@ class LaravelModelsGeneratorCommand extends Command
         $this->sm = $conn->createSchemaManager();
 
         $tables = $this->sm->listTables();
+
+        if (count($tables) == 0) {
+            $this->warn('There are no tables in the connection you used. Please check the config file.');
+
+            return self::FAILURE;
+        }
 
         $morphables = [];
 
@@ -169,11 +182,13 @@ class LaravelModelsGeneratorCommand extends Command
 
         $fileSystem = new Filesystem;
 
-        foreach ($dbTables as $dbTable) {
-            $fileName = $dbTable->className.'.php';
-            $fileSystem->put(app_path('Models'.DIRECTORY_SEPARATOR.$fileName), $this->modelContent($dbTable->className, $dbTable));
+        foreach ($dbTables as $name => $dbTable) {
+            if ($tableToCreate === null || ($tableToCreate && $tableToCreate === $name)) {
+                $fileName = $dbTable->className.'.php';
+                $fileSystem->put(app_path('Models'.DIRECTORY_SEPARATOR.$fileName), $this->modelContent($dbTable->className, $dbTable));
+            }
         }
-        $this->info('Check out your models');
+        $this->info($tableToCreate === null ? 'Check out your models' : "Check out your $tableToCreate model");
 
         return self::SUCCESS;
     }
@@ -411,5 +426,20 @@ class LaravelModelsGeneratorCommand extends Command
     private function dbTableNameToModelName(string $dbTableName): string
     {
         return ucfirst(Str::camel(Str::singular($dbTableName)));
+    }
+
+    private function getConnection(): string
+    {
+        return $this->option('connection') ?: config('database.default');
+    }
+
+    private function getSchema($connection): string
+    {
+        return $this->option('schema') ?: config('database.connections.'.$connection.'.database');
+    }
+
+    private function getTable(): ?string
+    {
+        return $this->option('table');
     }
 }

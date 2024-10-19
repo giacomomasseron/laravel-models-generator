@@ -34,6 +34,14 @@ return [
 php artisan laravel-models-generator:generate
 ```
 
+## Features
+
+The package manages these relationships:
+
+- HasMany / BelongsTo
+- MorphMany / MorphTo
+
+
 ## Testing
 
 ```bash
