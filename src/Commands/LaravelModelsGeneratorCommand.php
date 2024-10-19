@@ -63,7 +63,7 @@ class LaravelModelsGeneratorCommand extends Command
         $this->sm = $conn->createSchemaManager();
 
         $tables = $this->sm->listTables();
-        dd($tables);
+
         $morphables = [];
 
         foreach ($tables as $table) {
