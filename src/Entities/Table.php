@@ -7,6 +7,8 @@ namespace GiacomoMasseroni\LaravelModelsGenerator\Entities;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsToMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\HasMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
 
 class Table
 {
@@ -27,8 +29,14 @@ class Table
      */
     public array $belongsToMany = [];
 
+    /**
+     * @var array<MorphMany>
+     */
     public array $morphMany = [];
 
+    /**
+     * @var array<MorphTo>
+     */
     public array $morphTo = [];
 
     /**
