@@ -50,11 +50,11 @@ class LaravelModelsGeneratorCommand extends Command
         $dbTables = [];
 
         $connectionParams = [
-            'dbname' => config('database.connections.mysql.database'),
-            'user' => config('database.connections.mysql.username'),
-            'password' => config('database.connections.mysql.password'),
-            'host' => config('database.connections.mysql.host'),
-            'driver' => 'pdo_mysql',
+            'dbname' => config('database.connections.'.config('database.default').'.database'),
+            'user' => config('database.connections.'.config('database.default').'.username'),
+            'password' => config('database.connections.'.config('database.default').'.password'),
+            'host' => config('database.connections.'.config('database.default').'.host'),
+            'driver' => 'pdo_'.config('database.connections.'.config('database.default').'.driver'),
         ];
 
         $conn = DriverManager::getConnection($connectionParams);
@@ -63,7 +63,7 @@ class LaravelModelsGeneratorCommand extends Command
         $this->sm = $conn->createSchemaManager();
 
         $tables = $this->sm->listTables();
-
+dd($tables);
         $morphables = [];
 
         foreach ($tables as $table) {
