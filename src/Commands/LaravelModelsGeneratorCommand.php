@@ -213,6 +213,17 @@ class LaravelModelsGeneratorCommand extends Command
         $parent = 'Model';
         $body = '';
 
+        if (count(config('models-generator.implements', [])) > 0) {
+            foreach (config('models-generator.implements') as $interface) {
+                $arImports[] = 'use '.$interface.';';
+            }
+
+            $parent .= ' implements '.implode(', ', array_map(function ($interface) {
+                    $parts = explode('\\', $interface);
+                    return end($parts);
+                }, config('models-generator.implements')));
+        }
+
         if (count($dbTable->belongsTo) > 0) {
             $arImports[] = 'use Illuminate\Database\Eloquent\Relations\BelongsTo;';
         }

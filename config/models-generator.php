@@ -21,6 +21,13 @@ return [
              */
             'morphs' => [
             ],
+
+            /**
+             * Interface(s) implemented by all models
+             */
+            'implements' => [
+
+            ],
         ],
     ],
 ];
