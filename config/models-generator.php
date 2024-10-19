@@ -12,15 +12,14 @@ return [
 
             /**
              * [
-             *      'column_name' => 'table',
+             *      'table_name' => 'polymorphic_type',
+             *
+             *      ex. for official laravel documentation
+             *          'posts' => 'commentable',
+             *
              * ]
              */
             'morphs' => [
-                'settingable' => 'settings',
-            ],
-
-            'morphs_one' => [
-                'customer' => 'settings',
             ],
         ],
     ],

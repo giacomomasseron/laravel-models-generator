@@ -351,12 +351,6 @@ class LaravelModelsGeneratorCommand extends Command
 
         $content = str_replace($search, $replace, $content);
 
-        if (file_exists(app_path('Models/CruratedCore/Concerns/'.$className.'Trait.php'))) {
-            $content = str_replace('{{traits}}', 'use \App\Models\CruratedCore\Concerns\\'.$className.'Trait;', $content);
-        } else {
-            $content = str_replace('{{traits}}', '', $content);
-        }
-
         return $content;
     }
 
