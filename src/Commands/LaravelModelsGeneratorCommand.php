@@ -219,9 +219,10 @@ class LaravelModelsGeneratorCommand extends Command
             }
 
             $parent .= ' implements '.implode(', ', array_map(function ($interface) {
-                    $parts = explode('\\', $interface);
-                    return end($parts);
-                }, config('models-generator.implements')));
+                $parts = explode('\\', $interface);
+
+                return end($parts);
+            }, config('models-generator.implements')));
         }
 
         if (count($dbTable->belongsTo) > 0) {
