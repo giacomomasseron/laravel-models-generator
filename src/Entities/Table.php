@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator\Entities;
 
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsTo;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsToMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\HasMany;
+
 class Table
 {
     public array $hasOne = [];
@@ -22,6 +26,10 @@ class Table
      * @var array<BelongsToMany>
      */
     public array $belongsToMany = [];
+
+    public array $morphMany = [];
+
+    public array $morphTo = [];
 
     /**
      * @var array<string>

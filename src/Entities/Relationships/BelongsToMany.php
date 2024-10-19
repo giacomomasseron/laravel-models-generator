@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GiacomoMasseroni\LaravelModelsGenerator\Entities;
+namespace GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships;
 
-class BelongsToMany
+use GiacomoMasseroni\LaravelModelsGenerator\Contracts\RelationshipInterface;
+
+class BelongsToMany implements RelationshipInterface
 {
     public bool $timestamps = false;
 

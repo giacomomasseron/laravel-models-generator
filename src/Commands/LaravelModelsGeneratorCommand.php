@@ -13,9 +13,11 @@ use Doctrine\DBAL\Types\DateTimeType;
 use Doctrine\DBAL\Types\DateType;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
-use GiacomoMasseroni\LaravelModelsGenerator\Entities\BelongsTo;
-use GiacomoMasseroni\LaravelModelsGenerator\Entities\BelongsToMany;
-use GiacomoMasseroni\LaravelModelsGenerator\Entities\HasMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsTo;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsToMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\HasMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
@@ -62,12 +64,14 @@ class LaravelModelsGeneratorCommand extends Command
 
         $tables = $this->sm->listTables();
 
+        $morphables = [];
+
         foreach ($tables as $table) {
             $fks = $table->getForeignKeys();
             $columns = $this->getTableColumns($table->getName());
             $indexes = $this->getTableIndexes($table->getName());
 
-            $dbTable = new Table($table->getName(), ucfirst(Str::camel(Str::singular($table->getName()))));
+            $dbTable = new Table($table->getName(), $this->dbTableNameToModelName($table->getName()));
             if (isset($indexes['primary'])) {
                 $dbTable->primaryKey = $indexes['primary']->getColumns()[0];
             }
@@ -81,6 +85,13 @@ class LaravelModelsGeneratorCommand extends Command
             foreach ($columns as $column) {
                 if (($laravelColumnType = $this->laravelColumnType($column->getType())) !== null) {
                     $dbTable->casts[$column->getName()] = $laravelColumnType;
+                }
+
+                // Get morph
+                if (str_ends_with($column->getName(), '_type') && in_array(str_replace('_type', '', $column->getName()).'_id', array_keys($columns))) {
+                    $dbTable->morphTo[] = new MorphTo(str_replace('_type', '', $column->getName()));
+
+                    $morphables[str_replace('_type', '', $column->getName())] = $dbTable->className;
                 }
             }
 
@@ -143,6 +154,17 @@ class LaravelModelsGeneratorCommand extends Command
                     }
                 }
             }
+
+            // Morph many
+            foreach (config('models-generator.morphs') as $table => $relationship) {
+                if ($table == $dbTable->name) {
+                    $dbTable->morphMany[] = new MorphMany(
+                        Str::camel(Str::plural($morphables[$relationship])),
+                        $morphables[$relationship],
+                        $relationship,
+                    );
+                }
+            }
         }
 
         $fileSystem = new Filesystem;
@@ -203,9 +225,21 @@ class LaravelModelsGeneratorCommand extends Command
             $arImports[] = 'use Illuminate\Database\Eloquent\Relations\BelongsToMany;';
         }
 
-        $body .= '    public $table = \''.$dbTable->name.'\';'."\n"."\n";
+        if (count($dbTable->morphTo) > 0) {
+            $arImports[] = 'use Illuminate\Database\Eloquent\Relations\MorphTo;';
+        }
 
-        $body .= '    public $primaryKey = \''.$dbTable->primaryKey.'\';'."\n"."\n";
+        if (count($dbTable->morphMany) > 0) {
+            $arImports[] = 'use Illuminate\Database\Eloquent\Relations\MorphMany;';
+        }
+
+        if (config('models-generator.table')) {
+            $body .= '    public $table = \''.$dbTable->name.'\';'."\n"."\n";
+        }
+
+        if (config('models-generator.primary_key')) {
+            $body .= '    public $primaryKey = \''.$dbTable->primaryKey.'\';'."\n"."\n";
+        }
 
         $body .= '    public $timestamps = '.($dbTable->timestamps ? 'true' : 'false').';'."\n"."\n";
 
@@ -282,6 +316,24 @@ class LaravelModelsGeneratorCommand extends Command
 	}'."\n";
         }
 
+        /** @var MorphTo $morphTo */
+        foreach ($dbTable->morphTo as $morphTo) {
+            $body .= '
+    public function '.$morphTo->name.'(): MorphTo
+	{
+    	return $this->morphTo(__FUNCTION__, \''.$morphTo->name.'_type\', \''.$morphTo->name.'_id\');
+    }'."\n";
+        }
+
+        /** @var MorphMany $morphMany */
+        foreach ($dbTable->morphMany as $morphMany) {
+                $body .= '
+    public function '.$morphMany->name.'(): MorphMany
+	{
+    	return $this->morphMany('.$morphMany->related.'::class, \''.$morphMany->name.'\');
+    }'."\n";
+        }
+
         $search = [
             '{{namespace}}',
             '{{class}}',
@@ -348,5 +400,10 @@ class LaravelModelsGeneratorCommand extends Command
         }
 
         return null;
+    }
+
+    private function dbTableNameToModelName(string $dbTableName): string
+    {
+        return ucfirst(Str::camel(Str::singular($dbTableName)));
     }
 }
