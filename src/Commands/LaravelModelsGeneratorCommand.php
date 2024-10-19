@@ -206,14 +206,14 @@ class LaravelModelsGeneratorCommand extends Command
         $content = file_get_contents($this->getStub());
         $namespace = config('models-generator.namespace', 'App\Models');
         $arImports = [
-            'use Illuminate\Database\Eloquent\Model;',
+            config('models-generator.parent', 'Illuminate\Database\Eloquent\Model'),
         ];
         $parent = 'Model';
         $body = '';
 
         if (count(config('models-generator.implements', [])) > 0) {
             foreach (config('models-generator.implements') as $interface) {
-                $arImports[] = 'use '.$interface.';';
+                $arImports[] = $interface;
             }
 
             $parent .= ' implements '.implode(', ', array_map(function ($interface) {
@@ -224,23 +224,23 @@ class LaravelModelsGeneratorCommand extends Command
         }
 
         if (count($dbTable->belongsTo) > 0) {
-            $arImports[] = 'use Illuminate\Database\Eloquent\Relations\BelongsTo;';
+            $arImports[] = \Illuminate\Database\Eloquent\Relations\BelongsTo::class;
         }
 
         if (count($dbTable->hasMany) > 0) {
-            $arImports[] = 'use Illuminate\Database\Eloquent\Relations\HasMany;';
+            $arImports[] = \Illuminate\Database\Eloquent\Relations\HasMany::class;
         }
 
         if (count($dbTable->belongsToMany) > 0) {
-            $arImports[] = 'use Illuminate\Database\Eloquent\Relations\BelongsToMany;';
+            $arImports[] = \Illuminate\Database\Eloquent\Relations\BelongsToMany::class;
         }
 
         if (count($dbTable->morphTo) > 0) {
-            $arImports[] = 'use Illuminate\Database\Eloquent\Relations\MorphTo;';
+            $arImports[] = \Illuminate\Database\Eloquent\Relations\MorphTo::class;
         }
 
         if (count($dbTable->morphMany) > 0) {
-            $arImports[] = 'use Illuminate\Database\Eloquent\Relations\MorphMany;';
+            $arImports[] = \Illuminate\Database\Eloquent\Relations\MorphMany::class;
         }
 
         if (config('models-generator.table')) {
@@ -354,7 +354,9 @@ class LaravelModelsGeneratorCommand extends Command
         $replace = [
             $namespace,
             $className,
-            implode("\n", $arImports),
+            implode("\n", array_map(function ($import) {
+                return "use $import;";
+            }, $arImports)),
             $parent,
             $body,
         ];
