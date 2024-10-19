@@ -34,13 +34,51 @@ return [
 php artisan laravel-models-generator:generate
 ```
 
-## Features
+## Polymorphic relationships
 
-The package manages these relationships:
+To add polymorphic relationships to your models, you can use `morphs` array in the config file.  
+If you have tables like this:
 
-- HasMany / BelongsTo
-- MorphMany / MorphTo
+```
+posts
+id - integer
+name - string
 
+users
+id - integer
+name - string
+
+images
+id - integer
+url - string
+imageable_id - integer
+imageable_type - string
+```
+And config file like this:
+
+```php
+'morphs' => [
+    'posts' => 'imageable'
+],
+```
+
+This relationship will be created in the `Image` model:
+
+```php
+public function imageable(): MorphTo
+{
+    return $this->morphTo(__FUNCTION__, 'imageable_type', 'imageable_id');
+}
+```
+
+This relationship will be created in the `Post` model:
+
+```php
+public function images(): MorphMany
+{
+    return $this->morphMany(Image::class, 'images');
+}
+```
 
 ## Testing
 
