@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.1.1 - 2024-10-20
+
+### Features
+
+- Add model properties
+
 ## v0.1.0 - 2024-10-20
 
 ### Features
