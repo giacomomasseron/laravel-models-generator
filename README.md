@@ -29,13 +29,8 @@ return [
     'connection' => true,
     'primary_key' => true,
 
-    'parent' => [
-        Illuminate\Database\Eloquent\Model::class,
-    ],
-
-    'namespace' => [
-        'App\Models',
-    ],
+    'parent' => Illuminate\Database\Eloquent\Model::class,
+    'namespace' => 'App\Models',
 
     /**
      * [
@@ -53,6 +48,12 @@ return [
      * Interface(s) implemented by all models
      */
     'implements' => [
+    ],
+
+    /**
+     * Trait(s) used by all models
+     */
+    'traits' => [
     ],
 ];
 ```
@@ -107,6 +108,24 @@ public function images(): MorphMany
 {
     return $this->morphMany(Image::class, 'images');
 }
+```
+
+## Interfaces
+
+If you want your models implement interface(s), use `implements` value in config:
+
+```php
+'implements' => [
+],
+```
+
+## Traits
+
+If you want your models use trait(s), use `traits` value in config:
+
+```php
+'traits' => [
+],
 ```
 
 ## Testing

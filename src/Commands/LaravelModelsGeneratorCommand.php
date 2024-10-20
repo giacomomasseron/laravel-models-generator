@@ -258,6 +258,16 @@ class LaravelModelsGeneratorCommand extends Command
             $arImports[] = \Illuminate\Database\Eloquent\Relations\MorphMany::class;
         }
 
+        if (count(config('models-generator.traits', [])) > 0) {
+            foreach (config('models-generator.traits') as $trait) {
+                $arImports[] = $trait;
+
+                $parts = explode('\\', $trait);
+                $body .= '    use '.end($parts).';'."\n";
+            }
+            $body .= "\n";
+        }
+
         if (config('models-generator.table')) {
             $body .= '    public $table = \''.$dbTable->name.'\';'."\n"."\n";
         }

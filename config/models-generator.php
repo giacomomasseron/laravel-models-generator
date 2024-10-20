@@ -8,13 +8,8 @@ return [
     'connection' => true,
     'primary_key' => true,
 
-    'parent' => [
-        Illuminate\Database\Eloquent\Model::class,
-    ],
-
-    'namespace' => [
-        'App\Models',
-    ],
+    'parent' => Illuminate\Database\Eloquent\Model::class,
+    'namespace' => 'App\Models',
 
     /**
      * [
@@ -32,5 +27,11 @@ return [
      * Interface(s) implemented by all models
      */
     'implements' => [
+    ],
+
+    /**
+     * Trait(s) used by all models
+     */
+    'traits' => [
     ],
 ];
