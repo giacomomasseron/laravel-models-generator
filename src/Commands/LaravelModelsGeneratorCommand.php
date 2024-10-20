@@ -226,8 +226,8 @@ class LaravelModelsGeneratorCommand extends Command
         $parent = 'Model';
         $body = '';
 
-        if (count(config('models-generator.implements', [])) > 0) {
-            foreach (config('models-generator.implements') as $interface) {
+        if (count(config('models-generator.interfaces', [])) > 0) {
+            foreach (config('models-generator.interfaces') as $interface) {
                 $arImports[] = $interface;
             }
 
@@ -235,7 +235,7 @@ class LaravelModelsGeneratorCommand extends Command
                 $parts = explode('\\', $interface);
 
                 return end($parts);
-            }, config('models-generator.implements')));
+            }, config('models-generator.interfaces')));
         }
 
         if (count($dbTable->belongsTo) > 0) {

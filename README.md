@@ -122,7 +122,7 @@ public function images(): MorphMany
 If you want your models implement interface(s), use `implements` value in config:
 
 ```php
-'implements' => [
+'interfaces' => [
 ],
 ```
 
