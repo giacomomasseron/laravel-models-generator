@@ -47,7 +47,7 @@ return [
     /**
      * Interface(s) implemented by all models
      */
-    'implements' => [
+    'interfaces' => [
     ],
 
     /**
