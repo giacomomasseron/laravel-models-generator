@@ -12,46 +12,36 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
 
 class Table
 {
+    /** @var array<string> */
+    public array $imports = [];
+
+    /** @var array<string> */
+    public array $properties = [];
+
     public array $hasOne = [];
 
-    /**
-     * @var array<HasMany>
-     */
+    /** @var array<HasMany> */
     public array $hasMany = [];
 
-    /**
-     * @var array<BelongsTo>
-     */
+    /** @var array<BelongsTo> */
     public array $belongsTo = [];
 
-    /**
-     * @var array<BelongsToMany>
-     */
+    /** @var array<BelongsToMany> */
     public array $belongsToMany = [];
 
-    /**
-     * @var array<MorphMany>
-     */
+    /** @var array<MorphMany> */
     public array $morphMany = [];
 
-    /**
-     * @var array<MorphTo>
-     */
+    /** @var array<MorphTo> */
     public array $morphTo = [];
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public array $hidden = [];
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public array $fillable = [];
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public array $casts = [];
 
     public bool $timestamps = false;

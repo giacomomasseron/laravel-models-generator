@@ -6,9 +6,7 @@ namespace {{namespace}};
 
 /**
  * Class {{class}}
- * {{properties}}
- *
- * @package {{namespace}}
+{{properties}}
  */
 class {{class}} extends {{parent}}
 {
