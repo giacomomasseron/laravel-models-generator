@@ -64,6 +64,13 @@ return [
 php artisan laravel-models-generator:generate
 ```
 
+
+## Drivers supported
+
+- mysql
+
+Coming soon ... all drivers supported by doctrine/dbal.
+
 ## Polymorphic relationships
 
 To add polymorphic relationships to your models, you can use `morphs` array in the config file.  
