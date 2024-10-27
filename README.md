@@ -67,7 +67,8 @@ php artisan laravel-models-generator:generate
 
 ## Drivers supported
 
-- mysql
+- MySQL
+- SQLite
 
 Coming soon ... all drivers supported by doctrine/dbal.
 
