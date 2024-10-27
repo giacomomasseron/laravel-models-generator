@@ -47,7 +47,7 @@ class LaravelModelsGeneratorCommand extends Command
 
     private ?string $connection = null;
 
-    private ?string $schema= null;
+    private ?string $schema = null;
 
     private ?string $singleTableToCreate = null;
 
@@ -346,6 +346,6 @@ class LaravelModelsGeneratorCommand extends Command
 
     private function tableToGenerate(string $table): bool
     {
-        return !in_array($table, config('models-generator.except', [])) && $this->singleTableToCreate === null || ($this->singleTableToCreate && $this->singleTableToCreate === $table);
+        return ! in_array($table, config('models-generator.except', [])) && $this->singleTableToCreate === null || ($this->singleTableToCreate && $this->singleTableToCreate === $table);
     }
 }
