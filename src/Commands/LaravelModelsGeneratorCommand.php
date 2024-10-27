@@ -13,6 +13,7 @@ use Doctrine\DBAL\Types\DateTimeType;
 use Doctrine\DBAL\Types\DateType;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverFacade;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsToMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\HasMany;
@@ -57,15 +58,23 @@ class LaravelModelsGeneratorCommand extends Command
 
         $dbTables = [];
 
-        $connectionParams = [
+        /*$connectionParams = [
             'dbname' => $schema,
             'user' => config('database.connections.'.config('database.default').'.username'),
             'password' => config('database.connections.'.config('database.default').'.password'),
             'host' => config('database.connections.'.config('database.default').'.host'),
             'driver' => 'pdo_'.config('database.connections.'.config('database.default').'.driver'),
-        ];
+            'path' => config('database.connections.'.config('database.default').'.database')
+        ];*/
 
-        $conn = DriverManager::getConnection($connectionParams);
+        $connector = DriverFacade::instance(
+            config('database.connections.'.config('database.default').'.driver'),
+            $this->getConnection(),
+            $this->getSchema($connection),
+            $this->getTable()
+        );
+
+        $conn = DriverManager::getConnection($connector->connectionParams());
         $platform = $conn->getDatabasePlatform();
         $platform->registerDoctrineTypeMapping('enum', 'string');
         $this->sm = $conn->createSchemaManager();
@@ -297,10 +306,10 @@ class LaravelModelsGeneratorCommand extends Command
             return 'int';
         }
         if ($type instanceof DateType) {
-            return 'date';
+            return '\Datetime';
         }
         if ($type instanceof DateTimeType) {
-            return 'datetime';
+            return '\Datetime';
         }
         if ($type instanceof StringType) {
             return 'string';

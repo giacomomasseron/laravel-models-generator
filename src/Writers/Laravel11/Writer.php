@@ -30,7 +30,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     public function table(): string
     {
         if (config('models-generator.table')) {
-            return $this->spacer.'public $table = \''.$this->table->name.'\';'."\n";
+            return $this->spacer.'public $table = \''.$this->table->name.'\';'."\n"."\n";
         }
 
         return '';
@@ -39,7 +39,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     public function primaryKey(): string
     {
         if (config('models-generator.primary_key')) {
-            return $this->spacer.'public $primaryKey = \''.$this->table->primaryKey.'\';'."\n";
+            return $this->spacer.'public $primaryKey = \''.$this->table->primaryKey.'\';'."\n"."\n";
         }
 
         return '';
@@ -47,7 +47,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function timestamps(): string
     {
-        return $this->spacer.'public $timestamps = '.($this->table->timestamps ? 'true' : 'false').';'."\n";
+        return $this->spacer.'public $timestamps = '.($this->table->timestamps ? 'true' : 'false').';'."\n"."\n";
     }
 
     public function casts(): string
