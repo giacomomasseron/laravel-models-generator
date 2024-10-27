@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GiacomoMasseroni\LaravelModelsGenerator\Drivers\SQLite;
 
 use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DriverConnectorInterface;
@@ -11,7 +13,7 @@ class Connector extends DriverConnector implements DriverConnectorInterface
     {
         return [
             'driver' => 'pdo_'.config('database.connections.'.config('database.default').'.driver'),
-            'path' => config('database.connections.'.config('database.default').'.database')
+            'path' => config('database.connections.'.config('database.default').'.database'),
         ];
     }
 }

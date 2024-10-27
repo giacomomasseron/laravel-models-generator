@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GiacomoMasseroni\LaravelModelsGenerator\Drivers\MySQL;
 
 use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DriverConnectorInterface;

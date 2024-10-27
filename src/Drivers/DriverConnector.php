@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GiacomoMasseroni\LaravelModelsGenerator\Drivers;
 
 class DriverConnector
@@ -8,7 +10,5 @@ class DriverConnector
         protected ?string $connection = null,
         protected ?string $schema = null,
         protected ?string $table = null,
-    )
-    {
-    }
+    ) {}
 }
