@@ -45,6 +45,12 @@ class LaravelModelsGeneratorCommand extends Command
 
     private AbstractSchemaManager $sm;
 
+    private ?string $connection = null;
+
+    private ?string $schema= null;
+
+    private ?string $singleTableToCreate = null;
+
     /**
      * Execute the console command.
      *
@@ -52,9 +58,9 @@ class LaravelModelsGeneratorCommand extends Command
      */
     public function handle(): int
     {
-        $connection = $this->getConnection();
-        $schema = $this->getSchema($connection);
-        $tableToCreate = $this->getTable();
+        $this->connection = $this->getConnection();
+        $this->schema = $this->getSchema($this->connection);
+        $this->singleTableToCreate = $this->getTable();
 
         $dbTables = [];
 
@@ -69,9 +75,9 @@ class LaravelModelsGeneratorCommand extends Command
 
         $connector = DriverFacade::instance(
             config('database.connections.'.config('database.default').'.driver'),
-            $this->getConnection(),
-            $this->getSchema($connection),
-            $this->getTable()
+            $this->connection,
+            $this->schema,
+            $this->singleTableToCreate
         );
 
         $conn = DriverManager::getConnection($connector->connectionParams());
@@ -197,12 +203,12 @@ class LaravelModelsGeneratorCommand extends Command
         $fileSystem = new Filesystem;
 
         foreach ($dbTables as $name => $dbTable) {
-            if ($tableToCreate === null || ($tableToCreate && $tableToCreate === $name)) {
+            if ($this->tableToGenerate($name)) {
                 $fileName = $dbTable->className.'.php';
                 $fileSystem->put(app_path('Models'.DIRECTORY_SEPARATOR.$fileName), $this->modelContent($dbTable->className, $dbTable));
             }
         }
-        $this->info($tableToCreate === null ? 'Check out your models' : "Check out your $tableToCreate model");
+        $this->info($this->singleTableToCreate === null ? 'Check out your models' : "Check out your {$this->singleTableToCreate} model");
 
         return self::SUCCESS;
     }
@@ -336,5 +342,10 @@ class LaravelModelsGeneratorCommand extends Command
     private function getTable(): ?string
     {
         return $this->option('table');
+    }
+
+    private function tableToGenerate(string $table): bool
+    {
+        return !in_array($table, config('models-generator.except', [])) && $this->singleTableToCreate === null || ($this->singleTableToCreate && $this->singleTableToCreate === $table);
     }
 }
