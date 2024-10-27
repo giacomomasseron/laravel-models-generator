@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.1.2 - 2024-10-27
+
+### Features
+
+- Add SQLite support
+
 ## v0.1.1 - 2024-10-20
 
 ### Features
