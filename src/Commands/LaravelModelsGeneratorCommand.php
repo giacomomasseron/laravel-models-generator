@@ -113,7 +113,7 @@ class LaravelModelsGeneratorCommand extends Command
 
             /** @var Column $column */
             foreach ($columns as $column) {
-                if (($laravelColumnType = $this->laravelColumnType($column->getType())) !== null) {
+                if (($laravelColumnType = $this->laravelColumnType($column->getType(), $dbTable)) !== null) {
                     $dbTable->casts[$column->getName()] = $laravelColumnType;
 
                     $properties[] = $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
@@ -275,7 +275,7 @@ class LaravelModelsGeneratorCommand extends Command
             }
         }
 
-        $dbTable->imports = $arImports;
+        $dbTable->imports = array_merge($dbTable->imports, $arImports);
 
         $writer = new Writer($className, $dbTable, $content);
 
@@ -306,16 +306,18 @@ class LaravelModelsGeneratorCommand extends Command
         return self::$tableColumns[$tableName];
     }
 
-    private function laravelColumnType(Type $type): ?string
+    private function laravelColumnType(Type $type, Table $dbTable): ?string
     {
         if ($type instanceof BigIntType) {
             return 'int';
         }
         if ($type instanceof DateType) {
-            return '\Datetime';
+            $dbTable->imports[] = 'Datetime';
+            return 'Datetime';
         }
         if ($type instanceof DateTimeType) {
-            return '\Datetime';
+            $dbTable->imports[] = 'Datetime';
+            return 'Datetime';
         }
         if ($type instanceof StringType) {
             return 'string';

@@ -6,6 +6,7 @@ namespace {{namespace}};
 
 /**
  * Class {{class}}
+ *
 {{properties}}
  */
 class {{class}} extends {{parent}}
