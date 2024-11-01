@@ -168,6 +168,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= str_repeat($this->spacer, 2).'return $this->hasMany('.ucfirst(Str::camel($hasMany->related)).'::class, \''.$hasMany->foreignKeyName.'\''.(! empty($hasMany->localKeyName) ? ', \''.$hasMany->localKeyName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
         }
+
         return $content;
     }
 
@@ -216,7 +217,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= $this->spacer.'public function '.$relationName.'(): BelongsToMany'."\n";
             $content .= $this->spacer.'{'."\n";
             $content .= str_repeat($this->spacer, 2).'return $this->belongsToMany('.$foreignClassName.'::class, \''.$belongsToMany->pivot.'\', \''.$belongsToMany->foreignPivotKey.'\', \''.$belongsToMany->relatedPivotKey.'\')'."\n";
-            $content .= str_repeat($this->spacer,3).(count($belongsToMany->pivotAttributes) > 0 ? '->withPivot(\''.implode('\', \'', $belongsToMany->pivotAttributes).'\')' : '')."\n";
+            $content .= str_repeat($this->spacer, 3).(count($belongsToMany->pivotAttributes) > 0 ? '->withPivot(\''.implode('\', \'', $belongsToMany->pivotAttributes).'\')' : '')."\n";
             $content .= str_repeat($this->spacer, 3).($belongsToMany->timestamps ? '->withTimestamps()' : '').';'."\n";
             $content .= '}';
         }
@@ -234,6 +235,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= str_repeat($this->spacer, 2).'return $this->morphTo(__FUNCTION__, \''.$morphTo->name.'_type\', \''.$morphTo->name.'_id\');'."\n";
             $content .= $this->spacer.'}';
         }
+
         return $content;
     }
 
@@ -247,6 +249,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= str_repeat($this->spacer, 2).'return $this->morphMany('.$morphMany->related.'::class, \''.$morphMany->name.'\');'."\n";
             $content .= $this->spacer.'}';
         }
+
         return $content;
     }
 }
