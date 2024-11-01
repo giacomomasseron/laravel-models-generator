@@ -18,8 +18,6 @@ class Table
     /** @var array<string> */
     public array $properties = [];
 
-    public array $hasOne = [];
-
     /** @var array<HasMany> */
     public array $hasMany = [];
 
@@ -49,4 +47,22 @@ class Table
     public string $primaryKey = 'id';
 
     public function __construct(public string $name, public string $className) {}
+
+    public function addHasMany(HasMany $hasMany): self
+    {
+        $this->hasMany[] = $hasMany;
+
+        return $this;
+    }
+
+    public function thereIsAnotherHasMany(HasMany $hasMany): bool
+    {
+        foreach ($this->hasMany as $rel) {
+            if ($rel !== $hasMany && $rel->name === $hasMany->name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

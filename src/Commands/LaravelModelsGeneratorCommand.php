@@ -129,14 +129,15 @@ class LaravelModelsGeneratorCommand extends Command
             $dbTable->properties = $properties;
 
             foreach ($fks as $fk) {
-                $dbTable->belongsTo[$fk->getForeignTableName()] = new BelongsTo($fk);
+                $dbTable->belongsTo[$fk->getName()] = new BelongsTo($fk);
             }
 
             $dbTables[$table->getName()] = $dbTable;
         }
 
         foreach ($dbTables as $dbTable) {
-            foreach ($dbTable->belongsTo as $foreignTableName => $belongsTo) {
+            foreach ($dbTable->belongsTo as $foreignName => $belongsTo) {
+                $foreignTableName = $belongsTo->foreignKey->getForeignTableName();
                 //info('TABLE: '.$dbTable->name);
                 //info(print_r($belongsTo->foreignKey, true));
                 $foreignKeyName = $belongsTo->foreignKey->getLocalColumns()[0];
@@ -144,10 +145,11 @@ class LaravelModelsGeneratorCommand extends Command
                 if ($localKeyName == $dbTables[$foreignTableName]->primaryKey) {
                     $localKeyName = null;
                 }
-                $dbTables[$foreignTableName]->hasMany[] = new HasMany($dbTable->className, $foreignKeyName, $localKeyName);
+                $dbTables[$foreignTableName]->addHasMany(new HasMany($dbTable->className, $foreignKeyName, $localKeyName));
 
                 if (count($dbTable->belongsTo) > 1) {
-                    foreach ($dbTable->belongsTo as $subForeignTableName => $subBelongsTo) {
+                    foreach ($dbTable->belongsTo as $subForeignName => $subBelongsTo) {
+                        $subForeignTableName = $subBelongsTo->foreignKey->getForeignTableName();
                         if ($foreignTableName != $subForeignTableName) {
                             //info('TABLE: '.$dbTable->name);
                             //info($subForeignTableName);

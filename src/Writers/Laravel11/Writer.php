@@ -20,10 +20,8 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function properties(): string
     {
-        info(print_r($this->table->properties, true));
-
         return implode("\n", array_map(function ($property) {
-            return " * @property  $property";
+            return " * @property $property";
         }, $this->table->properties));
     }
 
@@ -75,66 +73,11 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function relationships(): string
     {
-        $body = '';
-
-        foreach ($this->table->hasMany as $hasMany) {
-            $body .= "\n".'
-    public function '.Str::camel(Str::plural($hasMany->name)).'(): HasMany
-	{
-		return $this->hasMany('.ucfirst(Str::camel($hasMany->name)).'::class, \''.$hasMany->foreignKeyName.'\''.(! empty($hasMany->localKeyName) ? ', \''.$hasMany->localKeyName.'\'' : '').');
-	}';
-        }
-
-        foreach ($this->table->belongsTo as $belongsTo) {
-            $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
-            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName())));
-            $foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
-            $body .= "\n".'
-    public function '.$relationName.'(): BelongsTo
-	{
-		return $this->belongsTo('.$foreignClassName.'::class, \''.$foreignColumnName.'\');
-	}';
-        }
-
-        foreach ($this->table->belongsToMany as $belongsToMany) {
-            if ($belongsToMany->pivot == $this->table->name.'_'.$belongsToMany->related ||
-                $belongsToMany->pivot == $belongsToMany->related.'_'.$this->table->name) {
-                $relationName = Str::camel(Str::plural($belongsToMany->related));
-            } else {
-                if (Str::start($belongsToMany->related, $belongsToMany->pivot)) {
-                    $related = str_replace($belongsToMany->pivot.'_', '', $belongsToMany->related);
-                } else {
-                    $related = $belongsToMany->related;
-                }
-                $relationName = Str::camel(str_replace("{$this->table->name}_", '', $belongsToMany->pivot).'_'.Str::plural($related));
-            }
-
-            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsToMany->related)));
-            //$foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
-            $body .= "\n".'
-    public function '.$relationName.'(): BelongsToMany
-	{
-		return $this->belongsToMany('.$foreignClassName.'::class, \''.$belongsToMany->pivot.'\', \''.$belongsToMany->foreignPivotKey.'\', \''.$belongsToMany->relatedPivotKey.'\')
-            '.(count($belongsToMany->pivotAttributes) > 0 ? '->withPivot(\''.implode('\', \'', $belongsToMany->pivotAttributes).'\')' : '').'
-            '.($belongsToMany->timestamps ? '->withTimestamps()' : '').';
-	}';
-        }
-
-        foreach ($this->table->morphTo as $morphTo) {
-            $body .= "\n".'
-    public function '.$morphTo->name.'(): MorphTo
-	{
-    	return $this->morphTo(__FUNCTION__, \''.$morphTo->name.'_type\', \''.$morphTo->name.'_id\');
-    }';
-        }
-
-        foreach ($this->table->morphMany as $morphMany) {
-            $body .= "\n".'
-    public function '.$morphMany->name.'(): MorphMany
-	{
-    	return $this->morphMany('.$morphMany->related.'::class, \''.$morphMany->name.'\');
-    }';
-        }
+        $body = $this->hasMany();
+        $body .= $this->belongTo();
+        $body .= $this->belongsToMany();
+        $body .= $this->morphTo();
+        $body .= $this->morphMany();
 
         return $body;
     }
@@ -208,5 +151,102 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     public function body(): string
     {
         return $this->traits().$this->table().$this->primaryKey().$this->timestamps().$this->fillable().$this->hidden().$this->casts().$this->relationships();
+    }
+
+    private function hasMany(): string
+    {
+        $content = '';
+        foreach ($this->table->hasMany as $hasMany) {
+            if ($this->table->thereIsAnotherHasMany($hasMany)) {
+                $relationName = Str::camel(Str::plural($hasMany->name)).'As'.ucfirst(Str::camel(str_replace($this->table->primaryKey, '', $hasMany->foreignKeyName)));
+            } else {
+                $relationName = Str::camel(Str::plural($hasMany->name));
+            }
+            $content .= "\n"."\n";
+            $content .= $this->spacer.'public function '.$relationName.'(): HasMany'."\n";
+            $content .= $this->spacer.'{'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->hasMany('.ucfirst(Str::camel($hasMany->related)).'::class, \''.$hasMany->foreignKeyName.'\''.(! empty($hasMany->localKeyName) ? ', \''.$hasMany->localKeyName.'\'' : '').');'."\n";
+            $content .= $this->spacer.'}';
+        }
+        return $content;
+    }
+
+    private function belongTo(): string
+    {
+        $content = '';
+        foreach ($this->table->belongsTo as $belongsTo) {
+            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName())));
+            $foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
+            $localColumnName = $belongsTo->foreignKey->getLocalColumns()[0];
+            if ($localColumnName != $this->table->primaryKey) {
+                $relationName = Str::camel(str_replace($this->table->primaryKey, '', $localColumnName));
+            } else {
+                $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
+            }
+            $content .= "\n"."\n";
+            $content .= $this->spacer.'public function '.$relationName.'(): BelongsTo'."\n";
+            $content .= $this->spacer.'{'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$foreignClassName.'::class, \''.$foreignColumnName.'\''.($localColumnName != $this->table->primaryKey ? ', \''.$localColumnName.'\'' : '').');'."\n";
+            $content .= $this->spacer.'}';
+        }
+
+        return $content;
+    }
+
+    private function belongsToMany(): string
+    {
+        $content = '';
+
+        foreach ($this->table->belongsToMany as $belongsToMany) {
+            if ($belongsToMany->pivot == $this->table->name.'_'.$belongsToMany->related ||
+                $belongsToMany->pivot == $belongsToMany->related.'_'.$this->table->name) {
+                $relationName = Str::camel(Str::plural($belongsToMany->related));
+            } else {
+                if (Str::start($belongsToMany->related, $belongsToMany->pivot)) {
+                    $related = str_replace($belongsToMany->pivot.'_', '', $belongsToMany->related);
+                } else {
+                    $related = $belongsToMany->related;
+                }
+                $relationName = Str::camel(str_replace("{$this->table->name}_", '', $belongsToMany->pivot).'_'.Str::plural($related));
+            }
+
+            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsToMany->related)));
+            //$foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
+            $content .= "\n"."\n";
+            $content .= $this->spacer.'public function '.$relationName.'(): BelongsToMany'."\n";
+            $content .= $this->spacer.'{'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsToMany('.$foreignClassName.'::class, \''.$belongsToMany->pivot.'\', \''.$belongsToMany->foreignPivotKey.'\', \''.$belongsToMany->relatedPivotKey.'\')'."\n";
+            $content .= str_repeat($this->spacer,3).(count($belongsToMany->pivotAttributes) > 0 ? '->withPivot(\''.implode('\', \'', $belongsToMany->pivotAttributes).'\')' : '')."\n";
+            $content .= str_repeat($this->spacer, 3).($belongsToMany->timestamps ? '->withTimestamps()' : '').';'."\n";
+            $content .= '}';
+        }
+
+        return $content;
+    }
+
+    private function morphTo(): string
+    {
+        $content = '';
+        foreach ($this->table->morphTo as $morphTo) {
+            $content .= "\n"."\n";
+            $content .= $this->spacer.'public function '.$morphTo->name.'(): MorphTo'."\n";
+            $content .= $this->spacer.'{'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->morphTo(__FUNCTION__, \''.$morphTo->name.'_type\', \''.$morphTo->name.'_id\');'."\n";
+            $content .= $this->spacer.'}';
+        }
+        return $content;
+    }
+
+    private function morphMany(): string
+    {
+        $content = '';
+        foreach ($this->table->morphMany as $morphMany) {
+            $content .= "\n"."\n";
+            $content .= $this->spacer.'public function '.$morphMany->name.'(): MorphMany'."\n";
+            $content .= $this->spacer.'{'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->morphMany('.$morphMany->related.'::class, \''.$morphMany->name.'\');'."\n";
+            $content .= $this->spacer.'}';
+        }
+        return $content;
     }
 }
