@@ -313,10 +313,12 @@ class LaravelModelsGeneratorCommand extends Command
         }
         if ($type instanceof DateType) {
             $dbTable->imports[] = 'Datetime';
+
             return 'Datetime';
         }
         if ($type instanceof DateTimeType) {
             $dbTable->imports[] = 'Datetime';
+
             return 'Datetime';
         }
         if ($type instanceof StringType) {
