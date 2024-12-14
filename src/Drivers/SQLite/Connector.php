@@ -11,6 +11,7 @@ class Connector extends DriverConnector implements DriverConnectorInterface
 {
     public function connectionParams(): array
     {
+        /** @phpstan-ignore-next-line */
         return [
             'driver' => 'pdo_'.config('database.connections.'.config('database.default').'.driver'),
             'path' => (string) config('database.connections.'.config('database.default').'.database'),

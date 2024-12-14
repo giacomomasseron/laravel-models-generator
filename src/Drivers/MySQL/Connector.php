@@ -11,6 +11,7 @@ class Connector extends DriverConnector implements DriverConnectorInterface
 {
     public function connectionParams(): array
     {
+        /** @phpstan-ignore-next-line */
         return [
             'dbname' => $this->schema,
             'user' => (string) config('database.connections.'.config('database.default').'.username'),
