@@ -6,7 +6,6 @@ namespace GiacomoMasseroni\LaravelModelsGenerator\Commands;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\BigIntType;
@@ -299,8 +298,8 @@ class LaravelModelsGeneratorCommand extends Command
     }
 
     /**
-     * @param string $tableName
      * @return array<string, mixed>
+     *
      * @throws Exception
      */
     private function getTableIndexes(string $tableName): array
@@ -313,8 +312,8 @@ class LaravelModelsGeneratorCommand extends Command
     }
 
     /**
-     * @param string $tableName
      * @return array<string, mixed>
+     *
      * @throws Exception
      */
     private function getTableColumns(string $tableName): array
