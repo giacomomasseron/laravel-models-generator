@@ -2,10 +2,13 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 5
+    level: 6
     paths:
         - src
         - config
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
+
+    ignoreErrors:
+        - '#Property GiacomoMasseroni\\LaravelModelsGenerator\\Commands\\LaravelModelsGeneratorCommand::\$sm with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager does not specify its types: T#'

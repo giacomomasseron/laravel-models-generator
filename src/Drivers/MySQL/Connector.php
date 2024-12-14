@@ -13,9 +13,9 @@ class Connector extends DriverConnector implements DriverConnectorInterface
     {
         return [
             'dbname' => $this->schema,
-            'user' => config('database.connections.'.config('database.default').'.username'),
-            'password' => config('database.connections.'.config('database.default').'.password'),
-            'host' => config('database.connections.'.config('database.default').'.host'),
+            'user' => (string) config('database.connections.'.config('database.default').'.username'),
+            'password' => (string) config('database.connections.'.config('database.default').'.password'),
+            'host' => (string) config('database.connections.'.config('database.default').'.host'),
             'driver' => 'pdo_'.config('database.connections.'.config('database.default').'.driver'),
         ];
     }

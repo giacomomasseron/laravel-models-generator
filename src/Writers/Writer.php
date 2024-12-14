@@ -60,6 +60,6 @@ abstract class Writer implements WriterInterface
 
     public function namespace(): string
     {
-        return config('models-generator.namespace', 'App\Models');
+        return (string) config('models-generator.namespace', 'App\Models');
     }
 }

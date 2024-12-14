@@ -14,6 +14,10 @@ return [
      */
     'connection' => true,
 
+    /*'phpdocs' => [
+        'scopes' => true,
+    ],*/
+
     /**
      * Add $primaryKey model property
      */

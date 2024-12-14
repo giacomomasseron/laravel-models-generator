@@ -13,7 +13,7 @@ class Connector extends DriverConnector implements DriverConnectorInterface
     {
         return [
             'driver' => 'pdo_'.config('database.connections.'.config('database.default').'.driver'),
-            'path' => config('database.connections.'.config('database.default').'.database'),
+            'path' => (string) config('database.connections.'.config('database.default').'.database'),
         ];
     }
 }

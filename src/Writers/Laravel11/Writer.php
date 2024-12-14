@@ -116,11 +116,12 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     {
         $parent = 'Model';
 
-        if (count(config('models-generator.interfaces', [])) > 0) {
-            $interfaces = config('models-generator.interfaces');
+        if (count((array) config('models-generator.interfaces', [])) > 0) {
+            /** @var list<string> $interfaces */
+            $interfaces = (array) config('models-generator.interfaces');
             asort($interfaces);
 
-            $parent .= ' implements '.implode(', ', array_map(function ($interface) {
+            $parent .= ' implements '.implode(', ', array_map(function (string $interface) {
                 $parts = explode('\\', $interface);
 
                 return end($parts);

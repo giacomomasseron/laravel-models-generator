@@ -6,6 +6,7 @@ namespace GiacomoMasseroni\LaravelModelsGenerator\Commands;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\BigIntType;
@@ -39,8 +40,14 @@ class LaravelModelsGeneratorCommand extends Command
      */
     protected $description = 'Generate models from existing database';
 
+    /**
+     * @var array<string, mixed>
+     */
     private static array $tableIndexes = [];
 
+    /**
+     * @var array<string, mixed>
+     */
     private static array $tableColumns = [];
 
     private AbstractSchemaManager $sm;
@@ -231,60 +238,69 @@ class LaravelModelsGeneratorCommand extends Command
             : __DIR__.'/../Entities/stubs/model.stub';
     }
 
-    protected function replaceClassName(&$stub, string $table): static
+    protected function replaceClassName(string &$stub, string $table): static
     {
         $stub = str_replace('{{ class }}', $table, $stub);
 
         return $this;
     }
 
+    /**
+     * @throws \Exception
+     */
     private function modelContent(string $className, Table $dbTable): string
     {
         $content = file_get_contents($this->getStub());
-        $arImports = [
-            config('models-generator.parent', 'Illuminate\Database\Eloquent\Model'),
-        ];
+        if ($content !== false) {
+            $arImports = [
+                config('models-generator.parent', 'Illuminate\Database\Eloquent\Model'),
+            ];
 
-        if (count($dbTable->belongsTo) > 0) {
-            $arImports[] = \Illuminate\Database\Eloquent\Relations\BelongsTo::class;
-        }
-
-        if (count($dbTable->hasMany) > 0) {
-            $arImports[] = \Illuminate\Database\Eloquent\Relations\HasMany::class;
-        }
-
-        if (count($dbTable->belongsToMany) > 0) {
-            $arImports[] = \Illuminate\Database\Eloquent\Relations\BelongsToMany::class;
-        }
-
-        if (count($dbTable->morphTo) > 0) {
-            $arImports[] = \Illuminate\Database\Eloquent\Relations\MorphTo::class;
-        }
-
-        if (count($dbTable->morphMany) > 0) {
-            $arImports[] = \Illuminate\Database\Eloquent\Relations\MorphMany::class;
-        }
-
-        if (count(config('models-generator.traits', [])) > 0) {
-            foreach (config('models-generator.traits') as $trait) {
-                $arImports[] = $trait;
+            if (count($dbTable->belongsTo) > 0) {
+                $arImports[] = \Illuminate\Database\Eloquent\Relations\BelongsTo::class;
             }
-        }
 
-        if (count(config('models-generator.interfaces', [])) > 0) {
-            foreach (config('models-generator.interfaces') as $interface) {
-                $arImports[] = $interface;
+            if (count($dbTable->hasMany) > 0) {
+                $arImports[] = \Illuminate\Database\Eloquent\Relations\HasMany::class;
             }
+
+            if (count($dbTable->belongsToMany) > 0) {
+                $arImports[] = \Illuminate\Database\Eloquent\Relations\BelongsToMany::class;
+            }
+
+            if (count($dbTable->morphTo) > 0) {
+                $arImports[] = \Illuminate\Database\Eloquent\Relations\MorphTo::class;
+            }
+
+            if (count($dbTable->morphMany) > 0) {
+                $arImports[] = \Illuminate\Database\Eloquent\Relations\MorphMany::class;
+            }
+
+            if (count(config('models-generator.traits', [])) > 0) {
+                foreach (config('models-generator.traits') as $trait) {
+                    $arImports[] = $trait;
+                }
+            }
+
+            if (count(config('models-generator.interfaces', [])) > 0) {
+                foreach (config('models-generator.interfaces') as $interface) {
+                    $arImports[] = $interface;
+                }
+            }
+
+            $dbTable->imports = array_merge($dbTable->imports, $arImports);
+
+            $writer = new Writer($className, $dbTable, $content);
+
+            return $writer->writeModelFile();
         }
 
-        $dbTable->imports = array_merge($dbTable->imports, $arImports);
-
-        $writer = new Writer($className, $dbTable, $content);
-
-        return $writer->writeModelFile();
+        throw new \Exception('Error reading stub file');
     }
 
     /**
+     * @param string $tableName
+     * @return array<string, mixed>
      * @throws Exception
      */
     private function getTableIndexes(string $tableName): array
@@ -297,6 +313,8 @@ class LaravelModelsGeneratorCommand extends Command
     }
 
     /**
+     * @param string $tableName
+     * @return array<string, mixed>
      * @throws Exception
      */
     private function getTableColumns(string $tableName): array
@@ -340,7 +358,7 @@ class LaravelModelsGeneratorCommand extends Command
         return $this->option('connection') ?: config('database.default');
     }
 
-    private function getSchema($connection): string
+    private function getSchema(string $connection): string
     {
         return $this->option('schema') ?: config('database.connections.'.$connection.'.database');
     }
