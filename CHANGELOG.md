@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.1.4 - 2024-12-15
+
+### Features
+
+- Fix belongsTo relationships name
+- add `strict_types` parameter to the config file
+- add PHPDocs to be PHPStan level 9 compliant
+
 ## v0.1.2 - 2024-10-27
 
 ### Features
