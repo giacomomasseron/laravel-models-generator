@@ -13,14 +13,14 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     {
         asort($this->table->imports);
 
-        return implode("\n", array_map(function ($import) {
+        return implode("\n", array_map(function (string $import) {
             return "use $import;";
         }, array_unique($this->table->imports)));
     }
 
     public function properties(): string
     {
-        return implode("\n", array_map(function ($property) {
+        return implode("\n", array_map(function (string $property) {
             return " * @property $property";
         }, $this->table->properties));
     }
