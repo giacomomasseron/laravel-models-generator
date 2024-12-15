@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.1.5 - 2024-12-15
+
+### Features
+
+- Fix belongsTo relationships name
+- add `clean_models_directory_before_generation` parameter to config file
+
 ## v0.1.4 - 2024-12-15
 
 ### Features
