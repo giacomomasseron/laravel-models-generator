@@ -199,8 +199,8 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $foreignClassName = ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName())));
             $foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
             $localColumnName = $belongsTo->foreignKey->getLocalColumns()[0];
-            if (str_contains($localColumnName, $this->table->primaryKey)) {
-                $relationName = Str::camel(str_replace($this->table->primaryKey, '', $localColumnName));
+            if (str_contains($localColumnName, $foreignColumnName) && $localColumnName != $foreignColumnName) {
+                $relationName = Str::camel(str_replace($foreignColumnName, '', $localColumnName));
             } else {
                 $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
             }

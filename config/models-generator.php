@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 // config for GiacomoMasseroni/LaravelModelsGenerator
 return [
+    'clean_models_directory_before_generation' => true,
+
     /**
      * Add declare(strict_types=1); to the top of each generated model file
      */

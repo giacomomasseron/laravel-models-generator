@@ -211,6 +211,10 @@ class LaravelModelsGeneratorCommand extends Command
 
         $fileSystem = new Filesystem;
 
+        if (config('models-generator.clean_models_directory_before_generation', true)) {
+            $fileSystem->cleanDirectory(app_path('Models'));
+        }
+
         foreach ($dbTables as $name => $dbTable) {
             if ($this->tableToGenerate($name)) {
                 $fileName = $dbTable->className.'.php';
