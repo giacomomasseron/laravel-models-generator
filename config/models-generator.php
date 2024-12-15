@@ -5,6 +5,11 @@ declare(strict_types=1);
 // config for GiacomoMasseroni/LaravelModelsGenerator
 return [
     /**
+     * Add declare(strict_types=1); to the top of each generated model file
+     */
+    'strict_types' => true,
+
+    /**
      * Add $table model property
      */
     'table' => true,

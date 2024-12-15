@@ -25,8 +25,21 @@ This is the contents of the published config file:
 
 ```php
 return [
-    'table' => true,
+    /**
+     * Add declare(strict_types=1); to the top of each generated model file
+     */
+    'strict_types' => true,
+    /**
+     * Add $connection model property
+     */
     'connection' => true,
+    /**
+     * Add $table model property
+     */
+    'table' => true,
+    /**
+     * Add $primaryKey model property
+     */
     'primary_key' => true,
 
     'parent' => Illuminate\Database\Eloquent\Model::class,

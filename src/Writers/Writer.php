@@ -15,6 +15,7 @@ abstract class Writer implements WriterInterface
     public function writeModelFile(): string
     {
         $search = [
+            '{{strict}}',
             '{{namespace}}',
             '{{properties}}',
             '{{class}}',
@@ -23,6 +24,7 @@ abstract class Writer implements WriterInterface
             '{{body}}',
         ];
         $replace = [
+            $this->strict(),
             $this->namespace(),
             $this->properties(),
             $this->className,
@@ -61,5 +63,10 @@ abstract class Writer implements WriterInterface
     public function namespace(): string
     {
         return (string) config('models-generator.namespace', 'App\Models');
+    }
+
+    public function strict(): string
+    {
+        return (bool) config('models-generator.strict_types', true) ? ' declare(strict_types=1);' : '';
     }
 }

@@ -28,7 +28,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     public function table(): string
     {
         if (config('models-generator.table')) {
-            return $this->spacer.'public $table = \''.$this->table->name.'\';'."\n"."\n";
+            return $this->spacer.'protected $table = \''.$this->table->name.'\';'."\n"."\n";
         }
 
         return '';
@@ -37,7 +37,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     public function primaryKey(): string
     {
         if (config('models-generator.primary_key')) {
-            return $this->spacer.'public $primaryKey = \''.$this->table->primaryKey.'\';'."\n"."\n";
+            return $this->spacer.'protected $primaryKey = \''.$this->table->primaryKey.'\';'."\n"."\n";
         }
 
         return '';
@@ -140,12 +140,20 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function traits(): string
     {
-        if (count(config('models-generator.traits', [])) > 0) {
+        /** @var array<string> $traitsToUse */
+        $traitsToUse = config('models-generator.traits', []);
+        if ($this->table->softDeletes) {
+            $traitsToUse[] = 'SoftDeletes';
+        }
+        if (count($traitsToUse) > 0) {
+            asort($traitsToUse);
+
             $body = '';
-            foreach (config('models-generator.traits') as $trait) {
+            foreach ($traitsToUse as $trait) {
                 $parts = explode('\\', $trait);
                 $body .= $this->spacer.'use '.end($parts).';'."\n";
             }
+
             $body .= "\n";
 
             return $body;
@@ -191,7 +199,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $foreignClassName = ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName())));
             $foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
             $localColumnName = $belongsTo->foreignKey->getLocalColumns()[0];
-            if ($localColumnName != $this->table->primaryKey) {
+            if (str_contains($localColumnName, $this->table->primaryKey)) {
                 $relationName = Str::camel(str_replace($this->table->primaryKey, '', $localColumnName));
             } else {
                 $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
@@ -229,6 +237,9 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $foreignClassName = ucfirst(Str::camel(Str::singular($belongsToMany->related)));
             //$foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
             $content .= "\n"."\n";
+            $content .= $this->spacer.'/**'."\n";
+            $content .= $this->spacer.' * @return BelongsToMany<'.$foreignClassName.', $this>'."\n";
+            $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$relationName.'(): BelongsToMany'."\n";
             $content .= $this->spacer.'{'."\n";
             $content .= str_repeat($this->spacer, 2).'return $this->belongsToMany('.$foreignClassName.'::class, \''.$belongsToMany->pivot.'\', \''.$belongsToMany->foreignPivotKey.'\', \''.$belongsToMany->relatedPivotKey.'\')'."\n";

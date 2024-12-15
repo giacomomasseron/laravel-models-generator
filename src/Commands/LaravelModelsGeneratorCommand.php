@@ -116,6 +116,7 @@ class LaravelModelsGeneratorCommand extends Command
                 $dbTable->hidden = ['password'];
             }
             $dbTable->timestamps = array_key_exists('created_at', $columns) && array_key_exists('updated_at', $columns);
+            $dbTable->softDeletes = array_key_exists('deleted_at', $columns);
 
             /** @var Column $column */
             foreach ($columns as $column) {
@@ -183,7 +184,7 @@ class LaravelModelsGeneratorCommand extends Command
                             );
                             $belongsToMany->timestamps = array_key_exists('created_at', $pivotColumns) && array_key_exists('updated_at', $pivotColumns);
 
-                            $dbTables[$foreignTableName]->belongsToMany[] = $belongsToMany;
+                            $dbTables[$foreignTableName]->addBelongsToMany($belongsToMany);
 
                             // TODO: do not why I added this code, it seems not working
                             /*foreach ($dbTables[$foreignTableName]->hasMany as $key => $hasMany) {
@@ -285,6 +286,9 @@ class LaravelModelsGeneratorCommand extends Command
                 foreach (config('models-generator.interfaces') as $interface) {
                     $arImports[] = $interface;
                 }
+            }
+            if ($dbTable->softDeletes) {
+                $arImports[] = \Illuminate\Database\Eloquent\SoftDeletes::class;
             }
 
             $dbTable->imports = array_merge($dbTable->imports, $arImports);

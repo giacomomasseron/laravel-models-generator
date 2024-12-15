@@ -44,6 +44,8 @@ class Table
 
     public bool $timestamps = false;
 
+    public bool $softDeletes = false;
+
     public string $primaryKey = 'id';
 
     public function __construct(public string $name, public string $className) {}
@@ -51,6 +53,38 @@ class Table
     public function addHasMany(HasMany $hasMany): self
     {
         $this->hasMany[] = $hasMany;
+
+        return $this;
+    }
+
+    public function addBelongsToMany(BelongsToMany $belongsToMany): self
+    {
+        $alreadyInserted = false;
+        foreach ($this->belongsToMany as $rel) {
+            if ($rel->related === $belongsToMany->related) {
+                $alreadyInserted = true;
+            }
+        }
+
+        if ($alreadyInserted !== false) {
+            $this->belongsToMany[] = $belongsToMany;
+        }
+
+        return $this;
+    }
+
+    public function addBelongsTo(BelongsTo $belongsTo): self
+    {
+        $alreadyInserted = false;
+        foreach ($this->belongsTo as $rel) {
+            if ($rel->foreignKey === $belongsTo->foreignKey) {
+                $alreadyInserted = true;
+            }
+        }
+
+        if ($alreadyInserted !== false) {
+            $this->belongsTo[] = $belongsTo;
+        }
 
         return $this;
     }
