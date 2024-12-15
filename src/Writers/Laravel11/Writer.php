@@ -85,7 +85,12 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     public function fillable(): string
     {
         if (count($this->table->fillable) > 0) {
-            $body = $this->spacer.'protected $fillable = ['."\n";
+            $body = $this->spacer.'/**'."\n";
+            $body .= $this->spacer.' * The attributes that are mass assignable.'."\n";
+            $body .= $this->spacer.' *'."\n";
+            $body .= $this->spacer.' * @var list<string>'."\n";
+            $body .= $this->spacer.' */'."\n";
+            $body .= $this->spacer.'protected $fillable = ['."\n";
             foreach ($this->table->fillable as $fillable) {
                 $body .= str_repeat($this->spacer, 2).'\''.$fillable.'\','."\n";
             }
@@ -163,10 +168,16 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             } else {
                 $relationName = Str::camel(Str::plural($hasMany->name));
             }
+            $relatedClassName = ucfirst(Str::camel($hasMany->related));
+
             $content .= "\n"."\n";
+
+            $content .= $this->spacer.'/**'."\n";
+            $content .= $this->spacer.' * @return HasMany<'.$relatedClassName.', $this>'."\n";
+            $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$relationName.'(): HasMany'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->hasMany('.ucfirst(Str::camel($hasMany->related)).'::class, \''.$hasMany->foreignKeyName.'\''.(! empty($hasMany->localKeyName) ? ', \''.$hasMany->localKeyName.'\'' : '').');'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->hasMany('.$relatedClassName.'::class, \''.$hasMany->foreignKeyName.'\''.(! empty($hasMany->localKeyName) ? ', \''.$hasMany->localKeyName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
         }
 
@@ -186,6 +197,9 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
                 $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
             }
             $content .= "\n"."\n";
+            $content .= $this->spacer.'/**'."\n";
+            $content .= $this->spacer.' * @return BelongsTo<'.$foreignClassName.', $this>'."\n";
+            $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$relationName.'(): BelongsTo'."\n";
             $content .= $this->spacer.'{'."\n";
             $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$foreignClassName.'::class, \''.$foreignColumnName.'\''.($localColumnName != $this->table->primaryKey ? ', \''.$localColumnName.'\'' : '').');'."\n";
@@ -231,6 +245,9 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         $content = '';
         foreach ($this->table->morphTo as $morphTo) {
             $content .= "\n"."\n";
+            $content .= $this->spacer.'/**'."\n";
+            $content .= $this->spacer.' * @return MorphTo<Model, $this>'."\n";
+            $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$morphTo->name.'(): MorphTo'."\n";
             $content .= $this->spacer.'{'."\n";
             $content .= str_repeat($this->spacer, 2).'return $this->morphTo(__FUNCTION__, \''.$morphTo->name.'_type\', \''.$morphTo->name.'_id\');'."\n";
@@ -245,6 +262,9 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         $content = '';
         foreach ($this->table->morphMany as $morphMany) {
             $content .= "\n"."\n";
+            $content .= $this->spacer.'/**'."\n";
+            $content .= $this->spacer.' * @return MorphMany<'.$morphMany->related.', $this>'."\n";
+            $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$morphMany->name.'(): MorphMany'."\n";
             $content .= $this->spacer.'{'."\n";
             $content .= str_repeat($this->spacer, 2).'return $this->morphMany('.$morphMany->related.'::class, \''.$morphMany->name.'\');'."\n";
