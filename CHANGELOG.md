@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.1.7 - 2024-12-16
+
+### Features
+
+- Fixed PHPDocs for datetime fields
+- Added `enums_casting` parameter to config file
+
 ## v0.1.6 - 2024-12-16
 
 ### Features
