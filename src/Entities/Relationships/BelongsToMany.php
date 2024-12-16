@@ -8,6 +8,10 @@ use GiacomoMasseroni\LaravelModelsGenerator\Contracts\RelationshipInterface;
 
 class BelongsToMany implements RelationshipInterface
 {
+    public string $name;
+
+    public string $foreignClassName;
+
     public bool $timestamps = false;
 
     /**

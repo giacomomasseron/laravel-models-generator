@@ -14,6 +14,7 @@ use Doctrine\DBAL\Types\DateType;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverFacade;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Property;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsToMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\HasMany;
@@ -123,7 +124,7 @@ class LaravelModelsGeneratorCommand extends Command
                 if (($laravelColumnType = $this->laravelColumnType($column->getType(), $dbTable)) !== null) {
                     $dbTable->casts[$column->getName()] = $laravelColumnType;
 
-                    $properties[] = $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
+                    $properties[] = new Property('$'.$column->getName(), $laravelColumnType.($column->getNotnull() ? '' : '|null')); //$laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
                 }
 
                 // Get morph
@@ -136,7 +137,8 @@ class LaravelModelsGeneratorCommand extends Command
             $dbTable->properties = $properties;
 
             foreach ($fks as $fk) {
-                $dbTable->belongsTo[$fk->getName()] = new BelongsTo($fk);
+                $dbTable->addBelongsTo(new BelongsTo($fk));
+                //$dbTable->belongsTo[$fk->getName()] = new BelongsTo($fk);
             }
 
             $dbTables[$table->getName()] = $dbTable;
@@ -297,6 +299,8 @@ class LaravelModelsGeneratorCommand extends Command
 
             $dbTable->imports = array_merge($dbTable->imports, $arImports);
 
+            $dbTable->fixRelationshipsName();
+
             $writer = new Writer($className, $dbTable, $content);
 
             return $writer->writeModelFile();
@@ -339,14 +343,14 @@ class LaravelModelsGeneratorCommand extends Command
             return 'int';
         }
         if ($type instanceof DateType) {
-            $dbTable->imports[] = 'Datetime';
+            $dbTable->imports[] = 'Carbon\Carbon';
 
-            return 'Datetime';
+            return 'Carbon';
         }
         if ($type instanceof DateTimeType) {
-            $dbTable->imports[] = 'Datetime';
+            $dbTable->imports[] = 'Carbon\Carbon';
 
-            return 'Datetime';
+            return 'Carbon';
         }
         if ($type instanceof StringType) {
             return 'string';

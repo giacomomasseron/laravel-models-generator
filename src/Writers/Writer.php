@@ -67,6 +67,6 @@ abstract class Writer implements WriterInterface
 
     public function strict(): string
     {
-        return (bool) config('models-generator.strict_types', true) ? ' declare(strict_types=1);' : '';
+        return config('models-generator.strict_types', true) ? "\n".'declare(strict_types=1);'."\n" : '';
     }
 }

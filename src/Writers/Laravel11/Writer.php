@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel11;
 
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Property;
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;
 use Illuminate\Support\Str;
 
@@ -20,8 +21,8 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function properties(): string
     {
-        return implode("\n", array_map(function (string $property) {
-            return " * @property $property";
+        return implode("\n", array_map(function (Property $property) {
+            return ' * @property'.($property->readOnly ? '-read' : '').' '.$property->return.' '.$property->field;
         }, $this->table->properties));
     }
 
@@ -171,11 +172,6 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     {
         $content = '';
         foreach ($this->table->hasMany as $hasMany) {
-            if ($this->table->thereIsAnotherHasMany($hasMany)) {
-                $relationName = Str::camel(Str::plural($hasMany->name)).'As'.ucfirst(Str::camel(str_replace($this->table->primaryKey, '', $hasMany->foreignKeyName)));
-            } else {
-                $relationName = Str::camel(Str::plural($hasMany->name));
-            }
             $relatedClassName = ucfirst(Str::camel($hasMany->related));
 
             $content .= "\n"."\n";
@@ -183,7 +179,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= $this->spacer.'/**'."\n";
             $content .= $this->spacer.' * @return HasMany<'.$relatedClassName.', $this>'."\n";
             $content .= $this->spacer.' */'."\n";
-            $content .= $this->spacer.'public function '.$relationName.'(): HasMany'."\n";
+            $content .= $this->spacer.'public function '.$hasMany->name.'(): HasMany'."\n";
             $content .= $this->spacer.'{'."\n";
             $content .= str_repeat($this->spacer, 2).'return $this->hasMany('.$relatedClassName.'::class, \''.$hasMany->foreignKeyName.'\''.(! empty($hasMany->localKeyName) ? ', \''.$hasMany->localKeyName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
@@ -196,21 +192,13 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     {
         $content = '';
         foreach ($this->table->belongsTo as $belongsTo) {
-            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName())));
-            $foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
-            $localColumnName = $belongsTo->foreignKey->getLocalColumns()[0];
-            if (str_contains($localColumnName, $foreignColumnName) && $localColumnName != $foreignColumnName) {
-                $relationName = Str::camel(str_replace($foreignColumnName, '', $localColumnName));
-            } else {
-                $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
-            }
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
-            $content .= $this->spacer.' * @return BelongsTo<'.$foreignClassName.', $this>'."\n";
+            $content .= $this->spacer.' * @return BelongsTo<'.$belongsTo->foreignClassName.', $this>'."\n";
             $content .= $this->spacer.' */'."\n";
-            $content .= $this->spacer.'public function '.$relationName.'(): BelongsTo'."\n";
+            $content .= $this->spacer.'public function '.$belongsTo->name.'(): BelongsTo'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$foreignClassName.'::class, \''.$foreignColumnName.'\''.($localColumnName != $this->table->primaryKey ? ', \''.$localColumnName.'\'' : '').');'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->foreignColumnName.'\''.($belongsTo->localColumnName != $this->table->primaryKey ? ', \''.$belongsTo->localColumnName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
         }
 
@@ -222,30 +210,18 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         $content = '';
 
         foreach ($this->table->belongsToMany as $belongsToMany) {
-            if ($belongsToMany->pivot == $this->table->name.'_'.$belongsToMany->related ||
-                $belongsToMany->pivot == $belongsToMany->related.'_'.$this->table->name) {
-                $relationName = Str::camel(Str::plural($belongsToMany->related));
-            } else {
-                if (Str::start($belongsToMany->related, $belongsToMany->pivot)) {
-                    $related = str_replace($belongsToMany->pivot.'_', '', $belongsToMany->related);
-                } else {
-                    $related = $belongsToMany->related;
-                }
-                $relationName = Str::camel(str_replace("{$this->table->name}_", '', $belongsToMany->pivot).'_'.Str::plural($related));
-            }
+            $withPivot = count($belongsToMany->pivotAttributes);
 
-            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsToMany->related)));
-            //$foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
-            $content .= $this->spacer.' * @return BelongsToMany<'.$foreignClassName.', $this>'."\n";
+            $content .= $this->spacer.' * @return BelongsToMany<'.$belongsToMany->foreignClassName.', $this>'."\n";
             $content .= $this->spacer.' */'."\n";
-            $content .= $this->spacer.'public function '.$relationName.'(): BelongsToMany'."\n";
+            $content .= $this->spacer.'public function '.$belongsToMany->name.'(): BelongsToMany'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->belongsToMany('.$foreignClassName.'::class, \''.$belongsToMany->pivot.'\', \''.$belongsToMany->foreignPivotKey.'\', \''.$belongsToMany->relatedPivotKey.'\')'."\n";
-            $content .= str_repeat($this->spacer, 3).(count($belongsToMany->pivotAttributes) > 0 ? '->withPivot(\''.implode('\', \'', $belongsToMany->pivotAttributes).'\')' : '')."\n";
-            $content .= str_repeat($this->spacer, 3).($belongsToMany->timestamps ? '->withTimestamps()' : '').';'."\n";
-            $content .= '}';
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsToMany('.$belongsToMany->foreignClassName.'::class, \''.$belongsToMany->pivot.'\', \''.$belongsToMany->foreignPivotKey.'\', \''.$belongsToMany->relatedPivotKey.'\')'.(! $withPivot ? ';' : '')."\n";
+            $content .= $withPivot ? str_repeat($this->spacer, 3).(count($belongsToMany->pivotAttributes) > 0 ? '->withPivot(\''.implode('\', \'', $belongsToMany->pivotAttributes).'\')' : '').(! $belongsToMany->timestamps ? ';' : '')."\n" : '';
+            $content .= $belongsToMany->timestamps ? str_repeat($this->spacer, 3).'->withTimestamps();'."\n" : '';
+            $content .= $this->spacer.'}';
         }
 
         return $content;
