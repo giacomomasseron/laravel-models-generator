@@ -64,6 +64,12 @@ return [
     ],
 
     /**
+     * Enum(s) used in laravel casts function
+     */
+    'enums_casting' => [
+    ],
+
+    /**
      * Excluded Tables
      */
     'except' => [

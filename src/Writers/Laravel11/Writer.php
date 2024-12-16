@@ -61,7 +61,12 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $body .= $this->spacer.'{'."\n";
             $body .= str_repeat($this->spacer, 2).'return ['."\n";
             foreach ($this->table->casts as $column => $type) {
-                $body .= str_repeat($this->spacer, 3).'\''.$column.'\' => '.'\''.$type.'\','."\n";
+                if (array_key_exists($column, (array) config('models-generator.enums_casting', []))) {
+                    $type = '\\'.config('models-generator.enums_casting', [])[$column].'::class';
+                } else {
+                    $type = '\''.$type.'\'';
+                }
+                $body .= str_repeat($this->spacer, 3).'\''.$column.'\' => '.$type.','."\n";
             }
             $body .= str_repeat($this->spacer, 2).'];'."\n";
             $body .= $this->spacer.'}';

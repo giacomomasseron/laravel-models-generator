@@ -25,22 +25,32 @@ This is the contents of the published config file:
 
 ```php
 return [
+    'clean_models_directory_before_generation' => true,
+    
     /**
      * Add declare(strict_types=1); to the top of each generated model file
      */
     'strict_types' => true,
+    
     /**
      * Add $connection model property
      */
     'connection' => true,
+    
     /**
      * Add $table model property
      */
     'table' => true,
+    
     /**
      * Add $primaryKey model property
      */
     'primary_key' => true,
+
+    /**
+     * Add $primaryKey field to fillable array
+     */
+    'primary_key_in_fillable' => true,
 
     'parent' => Illuminate\Database\Eloquent\Model::class,
     'namespace' => 'App\Models',
@@ -67,6 +77,23 @@ return [
      * Trait(s) used by all models
      */
     'traits' => [
+    ],
+
+    /**
+     * Enum(s) used in laravel casts function
+     */
+    'enums_casting' => [
+    ],
+
+    /**
+     * Excluded Tables
+     */
+    'except' => [
+        'migrations',
+        'failed_jobs',
+        'password_resets',
+        'personal_access_tokens',
+        'password_reset_tokens',
     ],
 ];
 ```
