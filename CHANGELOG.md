@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.1.6 - 2024-12-16
+
+### Features
+
+- Fix relationships names
+- Add PHPDocs for relationships
+
 ## v0.1.5 - 2024-12-15
 
 ### Features
