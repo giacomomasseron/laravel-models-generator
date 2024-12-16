@@ -117,8 +117,7 @@ class Table
 
             $this->belongsTo[$belongsTo->foreignKey->getName()] = $belongsTo;
 
-            $this->properties[] = new Property('$'.$belongsTo->name, 'Collection|'.$belongsTo->foreignClassName.'[]', false);
-            $this->imports[] = 'Illuminate\Database\Eloquent\Collection';
+            $this->properties[] = new Property('$'.$belongsTo->name, $belongsTo->foreignClassName, false);
         }
 
         return $this;

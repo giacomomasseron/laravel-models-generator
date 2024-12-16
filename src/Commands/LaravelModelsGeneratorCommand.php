@@ -9,9 +9,20 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\BigIntType;
+use Doctrine\DBAL\Types\BooleanType;
+use Doctrine\DBAL\Types\DateImmutableType;
+use Doctrine\DBAL\Types\DateTimeImmutableType;
 use Doctrine\DBAL\Types\DateTimeType;
+use Doctrine\DBAL\Types\DateTimeTzImmutableType;
+use Doctrine\DBAL\Types\DateTimeTzType;
 use Doctrine\DBAL\Types\DateType;
+use Doctrine\DBAL\Types\DecimalType;
+use Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\IntegerType;
+use Doctrine\DBAL\Types\SmallFloatType;
+use Doctrine\DBAL\Types\SmallIntType;
 use Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Type;
 use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverFacade;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Property;
@@ -57,6 +68,13 @@ class LaravelModelsGeneratorCommand extends Command
     private ?string $schema = null;
 
     private ?string $singleTableToCreate = null;
+
+    /**
+     * @var array<string, string>
+     */
+    private array $typeColumnPropertyMaps = [
+        'datetime' => 'Carbon',
+    ];
 
     /**
      * Execute the console command.
@@ -112,7 +130,13 @@ class LaravelModelsGeneratorCommand extends Command
             if (isset($indexes['primary'])) {
                 $dbTable->primaryKey = $indexes['primary']->getColumns()[0];
             }
-            $dbTable->fillable = array_diff(array_keys($columns), ['created_at', 'updated_at', 'deleted_at']);
+            $dbTable->fillable = array_diff(
+                array_keys($columns),
+                array_merge(
+                    ['created_at', 'updated_at', 'deleted_at'],
+                    (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey) ? [] : [$dbTable->primaryKey])
+                )
+            );
             if (in_array('password', $dbTable->fillable)) {
                 $dbTable->hidden = ['password'];
             }
@@ -124,7 +148,7 @@ class LaravelModelsGeneratorCommand extends Command
                 if (($laravelColumnType = $this->laravelColumnType($column->getType(), $dbTable)) !== null) {
                     $dbTable->casts[$column->getName()] = $laravelColumnType;
 
-                    $properties[] = new Property('$'.$column->getName(), $laravelColumnType.($column->getNotnull() ? '' : '|null')); //$laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
+                    $properties[] = new Property('$'.$column->getName(), ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null')); //$laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
                 }
 
                 // Get morph
@@ -339,21 +363,35 @@ class LaravelModelsGeneratorCommand extends Command
 
     private function laravelColumnType(Type $type, Table $dbTable): ?string
     {
-        if ($type instanceof BigIntType) {
+        if ($type instanceof SmallIntType ||
+            $type instanceof BigIntType ||
+            $type instanceof IntegerType
+        ) {
             return 'int';
         }
-        if ($type instanceof DateType) {
+        if ($type instanceof DateType ||
+            $type instanceof DateTimeType ||
+            $type instanceof DateImmutableType ||
+            $type instanceof DateTimeImmutableType ||
+            $type instanceof DateTimeTzType ||
+            $type instanceof DateTimeTzImmutableType
+        ) {
             $dbTable->imports[] = 'Carbon\Carbon';
 
-            return 'Carbon';
+            return 'datetime';
         }
-        if ($type instanceof DateTimeType) {
-            $dbTable->imports[] = 'Carbon\Carbon';
-
-            return 'Carbon';
-        }
-        if ($type instanceof StringType) {
+        if ($type instanceof StringType ||
+            $type instanceof TextType) {
             return 'string';
+        }
+        if ($type instanceof DecimalType ||
+            $type instanceof SmallFloatType ||
+            $type instanceof FloatType
+        ) {
+            return 'float';
+        }
+        if ($type instanceof BooleanType) {
+            return 'bool';
         }
 
         return null;

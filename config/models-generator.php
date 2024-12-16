@@ -30,6 +30,11 @@ return [
      */
     'primary_key' => true,
 
+    /**
+     * Add $primaryKey field to fillable array
+     */
+    'primary_key_in_fillable' => true,
+
     'parent' => Illuminate\Database\Eloquent\Model::class,
     'namespace' => 'App\Models',
 
