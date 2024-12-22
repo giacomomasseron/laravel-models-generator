@@ -199,7 +199,14 @@ class LaravelModelsGeneratorCommand extends Command
                             $pivotPrimaryKey = $pivotIndexes['primary']->getColumns()[0];
 
                             $pivotColumns = $this->getTableColumns($dbTable->name);
-                            $pivotAttributes = array_diff(array_keys($pivotColumns), [$foreignPivotKey, $relatedPivotKey, $pivotPrimaryKey]);
+                            $pivotTimestamps = array_key_exists('created_at', $pivotColumns) && array_key_exists('updated_at', $pivotColumns);
+                            $pivotAttributes = array_diff(
+                                array_keys($pivotColumns),
+                                array_merge(
+                                    [$foreignPivotKey, $relatedPivotKey, $pivotPrimaryKey],
+                                    $pivotTimestamps ? ['created_at', 'updated_at'] : []
+                                )
+                            );
 
                             $belongsToMany = new BelongsToMany(
                                 $subForeignTableName,
@@ -208,7 +215,7 @@ class LaravelModelsGeneratorCommand extends Command
                                 $relatedPivotKey,
                                 pivotAttributes: $pivotAttributes
                             );
-                            $belongsToMany->timestamps = array_key_exists('created_at', $pivotColumns) && array_key_exists('updated_at', $pivotColumns);
+                            $belongsToMany->timestamps = $pivotTimestamps;
 
                             $dbTables[$foreignTableName]->addBelongsToMany($belongsToMany);
 
