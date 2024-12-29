@@ -223,7 +223,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$belongsToMany->name.'(): BelongsToMany'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->belongsToMany('.$belongsToMany->foreignClassName.'::class, \''.$belongsToMany->pivot.'\', \''.$belongsToMany->foreignPivotKey.'\', \''.$belongsToMany->relatedPivotKey.'\')'.(! $withPivot ? ';' : '')."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsToMany('.$belongsToMany->foreignClassName.'::class, \''.$belongsToMany->pivot.'\', \''.$belongsToMany->foreignPivotKey.'\', \''.$belongsToMany->relatedPivotKey.'\')'.(! $withPivot && ! $belongsToMany->timestamps ? ';' : '')."\n";
             $content .= $withPivot ? str_repeat($this->spacer, 3).(count($belongsToMany->pivotAttributes) > 0 ? '->withPivot(\''.implode('\', \'', $belongsToMany->pivotAttributes).'\')' : '').(! $belongsToMany->timestamps ? ';' : '')."\n" : '';
             $content .= $belongsToMany->timestamps ? str_repeat($this->spacer, 3).'->withTimestamps();'."\n" : '';
             $content .= $this->spacer.'}';
