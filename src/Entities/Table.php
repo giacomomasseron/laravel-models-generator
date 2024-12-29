@@ -47,7 +47,7 @@ class Table
 
     public bool $softDeletes = false;
 
-    public string $primaryKey = 'id';
+    public PrimaryKey $primaryKey;
 
     public function __construct(public string $name, public string $className) {}
 
@@ -138,7 +138,7 @@ class Table
     {
         foreach ($this->hasMany as $key => $hasMany) {
             if ($this->thereIsAnotherHasMany($hasMany)) {
-                $this->hasMany[$key]->name = Str::camel(Str::plural($hasMany->name)).'As'.ucfirst(Str::camel(str_replace($this->primaryKey, '', $hasMany->foreignKeyName)));
+                $this->hasMany[$key]->name = Str::camel(Str::plural($hasMany->name)).'As'.ucfirst(Str::camel(str_replace($this->primaryKey->name, '', $hasMany->foreignKeyName)));
             } else {
                 $this->hasMany[$key]->name = Str::camel(Str::plural($hasMany->name));
             }

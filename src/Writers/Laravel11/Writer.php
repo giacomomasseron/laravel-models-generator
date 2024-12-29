@@ -37,11 +37,18 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function primaryKey(): string
     {
+        $body = '';
+
         if (config('models-generator.primary_key')) {
-            return $this->spacer.'protected $primaryKey = \''.$this->table->primaryKey.'\';'."\n"."\n";
+            $body = $this->spacer.'protected $primaryKey = \''.$this->table->primaryKey->name.'\';'."\n"."\n";
         }
 
-        return '';
+        if (! $this->table->primaryKey->autoIncrement) {
+            $body .= $this->spacer.'public $incrementing = false;'."\n"."\n";
+            $body .= $this->spacer.'protected $keyType = \'string\';'."\n"."\n";
+        }
+
+        return $body;
     }
 
     public function timestamps(): string
@@ -203,7 +210,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$belongsTo->name.'(): BelongsTo'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->foreignColumnName.'\''.($belongsTo->localColumnName != $this->table->primaryKey ? ', \''.$belongsTo->localColumnName.'\'' : '').');'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->foreignColumnName.'\''.($belongsTo->localColumnName != $this->table->primaryKey->name ? ', \''.$belongsTo->localColumnName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
         }
 

@@ -25,6 +25,7 @@ use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Type;
 use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverFacade;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\PrimaryKey;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Property;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsToMany;
@@ -89,15 +90,6 @@ class LaravelModelsGeneratorCommand extends Command
 
         $dbTables = [];
 
-        /*$connectionParams = [
-            'dbname' => $schema,
-            'user' => config('database.connections.'.config('database.default').'.username'),
-            'password' => config('database.connections.'.config('database.default').'.password'),
-            'host' => config('database.connections.'.config('database.default').'.host'),
-            'driver' => 'pdo_'.config('database.connections.'.config('database.default').'.driver'),
-            'path' => config('database.connections.'.config('database.default').'.database')
-        ];*/
-
         $connector = DriverFacade::instance(
             config('database.connections.'.config('database.default').'.driver'),
             $this->connection,
@@ -128,7 +120,14 @@ class LaravelModelsGeneratorCommand extends Command
 
             $dbTable = new Table($table->getName(), $this->dbTableNameToModelName($table->getName()));
             if (isset($indexes['primary'])) {
-                $dbTable->primaryKey = $indexes['primary']->getColumns()[0];
+                //$dbTable->primaryKey = $indexes['primary']->getColumns()[0];
+                $primaryKeyName = $indexes['primary']->getColumns()[0];
+                foreach ($columns as $column) {
+                    if ($column->getName() == $indexes['primary']->getColumns()[0]) {
+                        $dbTable->primaryKey = new PrimaryKey($primaryKeyName, $column->getAutoincrement(), $this->laravelColumnType($column->getType()));
+                    }
+                    break;
+                }
             }
             $dbTable->fillable = array_diff(
                 array_keys($columns),
@@ -171,8 +170,6 @@ class LaravelModelsGeneratorCommand extends Command
         foreach ($dbTables as $dbTable) {
             foreach ($dbTable->belongsTo as $foreignName => $belongsTo) {
                 $foreignTableName = $belongsTo->foreignKey->getForeignTableName();
-                //info('TABLE: '.$dbTable->name);
-                //info(print_r($belongsTo->foreignKey, true));
                 $foreignKeyName = $belongsTo->foreignKey->getLocalColumns()[0];
                 $localKeyName = $belongsTo->foreignKey->getForeignColumns()[0];
                 if ($localKeyName == $dbTables[$foreignTableName]->primaryKey) {
@@ -184,11 +181,6 @@ class LaravelModelsGeneratorCommand extends Command
                     foreach ($dbTable->belongsTo as $subForeignName => $subBelongsTo) {
                         $subForeignTableName = $subBelongsTo->foreignKey->getForeignTableName();
                         if ($foreignTableName != $subForeignTableName) {
-                            //info('TABLE: '.$dbTable->name);
-                            //info($subForeignTableName);
-                            //info(print_r($belongsTo->foreignKey, true));
-
-                            //info("Creating belongs to many in {$dbTables[$foreignTableName]->name} ({$subForeignTableName})");
 
                             $tableIndexes = $this->getTableIndexes($dbTables[$foreignTableName]->name);
                             $relatedTableIndexes = $this->getTableIndexes($subForeignTableName);
@@ -368,7 +360,7 @@ class LaravelModelsGeneratorCommand extends Command
         return self::$tableColumns[$tableName];
     }
 
-    private function laravelColumnType(Type $type, Table $dbTable): ?string
+    private function laravelColumnType(Type $type, ?Table $dbTable = null): ?string
     {
         if ($type instanceof SmallIntType ||
             $type instanceof BigIntType ||
@@ -383,7 +375,9 @@ class LaravelModelsGeneratorCommand extends Command
             $type instanceof DateTimeTzType ||
             $type instanceof DateTimeTzImmutableType
         ) {
-            $dbTable->imports[] = 'Carbon\Carbon';
+            if ($dbTable !== null) {
+                $dbTable->imports[] = 'Carbon\Carbon';
+            }
 
             return 'datetime';
         }
