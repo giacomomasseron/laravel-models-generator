@@ -133,7 +133,7 @@ class LaravelModelsGeneratorCommand extends Command
                 array_keys($columns),
                 array_merge(
                     ['created_at', 'updated_at', 'deleted_at'],
-                    (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey) ? [] : [$dbTable->primaryKey])
+                    (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey->name) ? [] : [$dbTable->primaryKey->name])
                 )
             );
             if (in_array('password', $dbTable->fillable)) {
