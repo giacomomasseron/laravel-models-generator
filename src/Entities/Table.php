@@ -62,7 +62,10 @@ class Table
     {
         $alreadyInserted = false;
         foreach ($this->belongsToMany as $rel) {
-            if ($rel->related === $belongsToMany->related) {
+            if ($rel->pivot === $belongsToMany->pivot && $rel->related === $belongsToMany->related) {
+                if ($this->name == 'allotment') {
+                    info(print_r($belongsToMany, true));
+                }
                 $alreadyInserted = true;
             }
         }

@@ -210,7 +210,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$belongsTo->name.'(): BelongsTo'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->foreignColumnName.'\''.($belongsTo->localColumnName != $this->table->primaryKey->name ? ', \''.$belongsTo->localColumnName.'\'' : '').');'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->localColumnName.'\''.($this->table->primaryKey->name != $belongsTo->foreignColumnName ? ', \''.$belongsTo->foreignColumnName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
         }
 
