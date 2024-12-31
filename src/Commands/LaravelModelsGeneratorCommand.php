@@ -120,7 +120,7 @@ class LaravelModelsGeneratorCommand extends Command
 
             $dbTable = new Table($table->getName(), $this->dbTableNameToModelName($table->getName()));
             if (isset($indexes['primary'])) {
-                //$dbTable->primaryKey = $indexes['primary']->getColumns()[0];
+                // $dbTable->primaryKey = $indexes['primary']->getColumns()[0];
                 $primaryKeyName = $indexes['primary']->getColumns()[0];
                 foreach ($columns as $column) {
                     if ($column->getName() == $indexes['primary']->getColumns()[0]) {
@@ -147,7 +147,7 @@ class LaravelModelsGeneratorCommand extends Command
                 if (($laravelColumnType = $this->laravelColumnType($column->getType(), $dbTable)) !== null) {
                     $dbTable->casts[$column->getName()] = $laravelColumnType;
 
-                    $properties[] = new Property('$'.$column->getName(), ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null')); //$laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
+                    $properties[] = new Property('$'.$column->getName(), ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null')); // $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
                 }
 
                 // Get morph
@@ -161,7 +161,7 @@ class LaravelModelsGeneratorCommand extends Command
 
             foreach ($fks as $fk) {
                 $dbTable->addBelongsTo(new BelongsTo($fk));
-                //$dbTable->belongsTo[$fk->getName()] = new BelongsTo($fk);
+                // $dbTable->belongsTo[$fk->getName()] = new BelongsTo($fk);
             }
 
             $dbTables[$table->getName()] = $dbTable;
