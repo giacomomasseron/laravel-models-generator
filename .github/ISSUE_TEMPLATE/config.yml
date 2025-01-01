@@ -1,5 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Request a feature
-    url: https://github.com/giacomomasseron/laravel-models-generator/issues/new?assignees=&labels=enchancement&projects=&template=feature_request.yml
-    about: Share ideas for new features
