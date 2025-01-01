@@ -14,6 +14,8 @@ interface WriterInterface
 
     public function traits(): string;
 
+    public function abstract(): string;
+
     public function table(): string;
 
     public function primaryKey(): string;

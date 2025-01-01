@@ -35,8 +35,16 @@ return [
      */
     'primary_key_in_fillable' => true,
 
-    'parent' => Illuminate\Database\Eloquent\Model::class,
+    'path' => app_path('Models'),
+
     'namespace' => 'App\Models',
+
+    'parent' => Illuminate\Database\Eloquent\Model::class,
+
+    'base_files' => [
+        'enabled' => false,
+        'abstract' => true,
+    ],
 
     /**
      * Define polymorphic relationships

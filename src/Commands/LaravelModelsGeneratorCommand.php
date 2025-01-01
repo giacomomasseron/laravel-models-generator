@@ -133,7 +133,7 @@ class LaravelModelsGeneratorCommand extends Command
                 array_keys($columns),
                 array_merge(
                     ['created_at', 'updated_at', 'deleted_at'],
-                    (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey->name) ? [] : [$dbTable->primaryKey->name])
+                    $dbTable->primaryKey !== null ? (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey->name) ? [] : [$dbTable->primaryKey->name]) : []
                 )
             );
             if (in_array('password', $dbTable->fillable)) {
@@ -242,10 +242,23 @@ class LaravelModelsGeneratorCommand extends Command
 
         foreach ($dbTables as $name => $dbTable) {
             if ($this->tableToGenerate($name)) {
+                $createBaseClass = config('models-generator.base_files.enabled', false);
+                if ($createBaseClass) {
+                    $baseClassesPath = $this->sanitizeBaseClassesPath(config('models-generator.base_files.path', 'app'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Base'));
+                    $this->createBaseClassesFolder($baseClassesPath);
+                    $dbTable->abstract = config('models-generator.base_files.abstract', false);
+                    $dbTable->namespace = (string) config('models-generator.namespace', 'App\Models').'\\Base';
+                    $fileName = $dbTable->className.'.php';
+                    $fileSystem->put(base_path($this->sanitizeBaseClassesPath(config('models-generator.base_files.path', 'app'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Base')).DIRECTORY_SEPARATOR.$fileName), $this->modelContent($dbTable->className, $dbTable));
+
+                    $dbTable->cleanForBase();
+                }
+
                 $fileName = $dbTable->className.'.php';
                 $fileSystem->put(app_path('Models'.DIRECTORY_SEPARATOR.$fileName), $this->modelContent($dbTable->className, $dbTable));
             }
         }
+
         $this->info($this->singleTableToCreate === null ? 'Check out your models' : "Check out your {$this->singleTableToCreate} model");
 
         return self::SUCCESS;
@@ -281,9 +294,11 @@ class LaravelModelsGeneratorCommand extends Command
     {
         $content = file_get_contents($this->getStub());
         if ($content !== false) {
-            $arImports = [
-                config('models-generator.parent', 'Illuminate\Database\Eloquent\Model'),
-            ];
+            $arImports = [];
+
+            if ($dbTable->importLaravelModel()) {
+                $arImports[] = config('models-generator.parent', 'Illuminate\Database\Eloquent\Model');
+            }
 
             if (count($dbTable->belongsTo) > 0) {
                 $arImports[] = \Illuminate\Database\Eloquent\Relations\BelongsTo::class;
@@ -305,17 +320,14 @@ class LaravelModelsGeneratorCommand extends Command
                 $arImports[] = \Illuminate\Database\Eloquent\Relations\MorphMany::class;
             }
 
-            if (count(config('models-generator.traits', [])) > 0) {
-                foreach (config('models-generator.traits') as $trait) {
-                    $arImports[] = $trait;
-                }
+            foreach ($dbTable->traits as $trait) {
+                $arImports[] = $trait;
             }
 
-            if (count(config('models-generator.interfaces', [])) > 0) {
-                foreach (config('models-generator.interfaces') as $interface) {
-                    $arImports[] = $interface;
-                }
+            foreach ($dbTable->interfaces as $interface) {
+                $arImports[] = $interface;
             }
+
             if ($dbTable->softDeletes) {
                 $arImports[] = \Illuminate\Database\Eloquent\SoftDeletes::class;
             }
@@ -421,5 +433,17 @@ class LaravelModelsGeneratorCommand extends Command
     private function tableToGenerate(string $table): bool
     {
         return ! in_array($table, config('models-generator.except', [])) && $this->singleTableToCreate === null || ($this->singleTableToCreate && $this->singleTableToCreate === $table);
+    }
+
+    private function sanitizeBaseClassesPath(string $path): string
+    {
+        return str_replace('/', DIRECTORY_SEPARATOR, $path);
+    }
+
+    private function createBaseClassesFolder(string $path): void
+    {
+        if (! file_exists(base_path($path))) {
+            mkdir(base_path($path), 0755, true);
+        }
     }
 }

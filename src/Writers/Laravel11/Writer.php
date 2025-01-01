@@ -10,6 +10,11 @@ use Illuminate\Support\Str;
 
 class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer implements WriterInterface
 {
+    public function body(): string
+    {
+        return $this->traits().$this->table().$this->primaryKey().$this->timestamps().$this->fillable().$this->hidden().$this->casts().$this->relationships();
+    }
+
     public function imports(): string
     {
         asort($this->table->imports);
@@ -21,14 +26,37 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function properties(): string
     {
-        return implode("\n", array_map(function (Property $property) {
-            return ' * @property'.($property->readOnly ? '-read' : '').' '.$property->return.' '.$property->field;
-        }, $this->table->properties));
+        if (count($this->table->properties) > 0) {
+            return "\n".' *'."\n".implode("\n", array_map(function (Property $property) {
+                return ' * @property'.($property->readOnly ? '-read' : '').' '.$property->return.' '.$property->field;
+            }, $this->table->properties));
+        }
+
+        return '';
+    }
+
+    public function parent(): string
+    {
+        $parent = $this->table->parent ?? 'Model';
+
+        if (count($this->table->interfaces) > 0) {
+            asort($this->table->interfaces);
+
+            $parent .= ' implements '.implode(', ', array_map(function (string $interface) {
+                $parts = explode('\\', $interface);
+
+                return end($parts);
+            }, $this->table->interfaces));
+
+            return $parent;
+        }
+
+        return $parent;
     }
 
     public function table(): string
     {
-        if (config('models-generator.table')) {
+        if ($this->table->showTableProperty) {
             return $this->spacer.'protected $table = \''.$this->table->name.'\';'."\n"."\n";
         }
 
@@ -39,13 +67,15 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     {
         $body = '';
 
-        if (config('models-generator.primary_key')) {
-            $body = $this->spacer.'protected $primaryKey = \''.$this->table->primaryKey->name.'\';'."\n"."\n";
-        }
+        if ($this->table->primaryKey !== null) {
+            if (config('models-generator.primary_key')) {
+                $body = $this->spacer.'protected $primaryKey = \''.$this->table->primaryKey->name.'\';'."\n"."\n";
+            }
 
-        if (! $this->table->primaryKey->autoIncrement) {
-            $body .= $this->spacer.'public $incrementing = false;'."\n"."\n";
-            $body .= $this->spacer.'protected $keyType = \'string\';'."\n"."\n";
+            if (! $this->table->primaryKey->autoIncrement) {
+                $body .= $this->spacer.'public $incrementing = false;'."\n"."\n";
+                $body .= $this->spacer.'protected $keyType = \'string\';'."\n"."\n";
+            }
         }
 
         return $body;
@@ -53,7 +83,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function timestamps(): string
     {
-        return $this->spacer.'public $timestamps = '.($this->table->timestamps ? 'true' : 'false').';'."\n"."\n";
+        return $this->table->showTimestampsProperty ? $this->spacer.'public $timestamps = '.($this->table->timestamps ? 'true' : 'false').';'."\n"."\n" : '';
     }
 
     public function casts(): string
@@ -61,7 +91,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         $body = '';
 
         if (count($this->table->casts) > 0) {
-            $body .= $this->spacer.'/**'."\n";
+            $body .= "\n"."\n".$this->spacer.'/**'."\n";
             $body .= $this->spacer.' * @return array<string, string>'."\n";
             $body .= $this->spacer.' */'."\n";
             $body .= $this->spacer.'protected function casts(): array'."\n";
@@ -107,7 +137,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             foreach ($this->table->fillable as $fillable) {
                 $body .= str_repeat($this->spacer, 2).'\''.$fillable.'\','."\n";
             }
-            $body .= $this->spacer.'];'."\n"."\n";
+            $body .= $this->spacer.'];';
 
             return $body;
         }
@@ -118,11 +148,11 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     public function hidden(): string
     {
         if (count($this->table->hidden) > 0) {
-            $body = $this->spacer.'protected $hidden = ['."\n";
+            $body = "\n"."\n".$this->spacer.'protected $hidden = ['."\n";
             foreach ($this->table->hidden as $hidden) {
                 $body .= str_repeat($this->spacer, 2).'\''.$hidden.'\','."\n";
             }
-            $body .= $this->spacer.'];'."\n"."\n";
+            $body .= $this->spacer.'];';
 
             return $body;
         }
@@ -130,31 +160,9 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         return '';
     }
 
-    public function parent(): string
-    {
-        $parent = 'Model';
-
-        if (count((array) config('models-generator.interfaces', [])) > 0) {
-            /** @var list<string> $interfaces */
-            $interfaces = (array) config('models-generator.interfaces');
-            asort($interfaces);
-
-            $parent .= ' implements '.implode(', ', array_map(function (string $interface) {
-                $parts = explode('\\', $interface);
-
-                return end($parts);
-            }, $interfaces));
-
-            return $parent;
-        }
-
-        return $parent;
-    }
-
     public function traits(): string
     {
-        /** @var array<string> $traitsToUse */
-        $traitsToUse = config('models-generator.traits', []);
+        $traitsToUse = $this->table->traits;
         if ($this->table->softDeletes) {
             $traitsToUse[] = 'SoftDeletes';
         }
@@ -173,11 +181,6 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         }
 
         return '';
-    }
-
-    public function body(): string
-    {
-        return $this->traits().$this->table().$this->primaryKey().$this->timestamps().$this->fillable().$this->hidden().$this->casts().$this->relationships();
     }
 
     private function hasMany(): string
@@ -210,7 +213,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$belongsTo->name.'(): BelongsTo'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->localColumnName.'\''.($this->table->primaryKey->name != $belongsTo->foreignColumnName ? ', \''.$belongsTo->foreignColumnName.'\'' : '').');'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->localColumnName.'\''.(($this->table->primaryKey?->name ?? '') != $belongsTo->foreignColumnName ? ', \''.$belongsTo->foreignColumnName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
         }
 
@@ -271,5 +274,10 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         }
 
         return $content;
+    }
+
+    public function abstract(): string
+    {
+        return $this->table->abstract ? 'abstract ' : '';
     }
 }

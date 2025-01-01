@@ -5,11 +5,9 @@ namespace {{namespace}};
 {{imports}}
 
 /**
- * Class {{class}}
- *
-{{properties}}
+ * Class {{className}}{{properties}}
  */
-class {{class}} extends {{parent}}
+{{abstract}}class {{className}} extends {{parent}}
 {
 {{body}}
 }

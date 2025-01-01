@@ -10,7 +10,7 @@ abstract class Writer implements WriterInterface
 {
     public string $spacer = '    ';
 
-    public function __construct(public string $className, public Table $table, public string $stubContent) {}
+    public function __construct(public string $className, public Table $table, public string $stubContent, protected bool $isBase = false) {}
 
     public function writeModelFile(): string
     {
@@ -18,7 +18,8 @@ abstract class Writer implements WriterInterface
             '{{strict}}',
             '{{namespace}}',
             '{{properties}}',
-            '{{class}}',
+            '{{abstract}}',
+            '{{className}}',
             '{{imports}}',
             '{{parent}}',
             '{{body}}',
@@ -27,6 +28,7 @@ abstract class Writer implements WriterInterface
             $this->strict(),
             $this->namespace(),
             $this->properties(),
+            $this->abstract(),
             $this->className,
             $this->imports(),
             $this->parent(),
@@ -37,6 +39,8 @@ abstract class Writer implements WriterInterface
     }
 
     abstract public function traits(): string;
+
+    abstract public function abstract(): string;
 
     abstract public function table(): string;
 
@@ -62,7 +66,7 @@ abstract class Writer implements WriterInterface
 
     public function namespace(): string
     {
-        return (string) config('models-generator.namespace', 'App\Models');
+        return $this->table->namespace ?? (string) config('models-generator.namespace', 'App\Models');
     }
 
     public function strict(): string
