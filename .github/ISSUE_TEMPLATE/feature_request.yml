@@ -1,0 +1,10 @@
+name: Request feature
+description: Request a new feature
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Add a description
+    validations:
+      required: true
