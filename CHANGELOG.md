@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.1.8 - 2025-01-01
+
+### Features
+
+- Fixes belongsTo relationship bug
+- Add `base_files` config parameter to generate base model classes
+
 ## v0.1.7 - 2024-12-16
 
 ### Features
