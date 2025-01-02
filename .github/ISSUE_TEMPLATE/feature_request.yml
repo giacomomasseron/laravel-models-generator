@@ -6,5 +6,3 @@ body:
     id: what-happened
     attributes:
       label: Add a description
-    validations:
-      required: true
