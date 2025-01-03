@@ -11,6 +11,7 @@ Major features:
 - PHPStan level 9 compliant
 - Laravel 11 style
 - Polymorphic relationships
+- Enums casting
 
 ## Installation
 
