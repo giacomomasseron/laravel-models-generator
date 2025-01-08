@@ -145,7 +145,7 @@ class LaravelModelsGeneratorCommand extends Command
             /** @var Column $column */
             foreach ($columns as $column) {
                 if (($laravelColumnType = $this->laravelColumnType($column->getType(), $dbTable)) !== null) {
-                    $dbTable->casts[$column->getName()] = $laravelColumnType;
+                    $dbTable->casts[$column->getName()] = $this->laravelColumnTypeForCast($column->getType(), $dbTable);
 
                     $properties[] = new Property('$'.$column->getName(), ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null')); // $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
                 }
@@ -379,6 +379,44 @@ class LaravelModelsGeneratorCommand extends Command
             $type instanceof IntegerType
         ) {
             return 'int';
+        }
+        if ($type instanceof DateType ||
+            $type instanceof DateTimeType ||
+            $type instanceof DateImmutableType ||
+            $type instanceof DateTimeImmutableType ||
+            $type instanceof DateTimeTzType ||
+            $type instanceof DateTimeTzImmutableType
+        ) {
+            if ($dbTable !== null) {
+                $dbTable->imports[] = 'Carbon\Carbon';
+            }
+
+            return 'datetime';
+        }
+        if ($type instanceof StringType ||
+            $type instanceof TextType) {
+            return 'string';
+        }
+        if ($type instanceof DecimalType ||
+            $type instanceof SmallFloatType ||
+            $type instanceof FloatType
+        ) {
+            return 'float';
+        }
+        if ($type instanceof BooleanType) {
+            return 'bool';
+        }
+
+        return null;
+    }
+
+    private function laravelColumnTypeForCast(Type $type, ?Table $dbTable = null): ?string
+    {
+        if ($type instanceof SmallIntType ||
+            $type instanceof BigIntType ||
+            $type instanceof IntegerType
+        ) {
+            return 'integer';
         }
         if ($type instanceof DateType ||
             $type instanceof DateTimeType ||
