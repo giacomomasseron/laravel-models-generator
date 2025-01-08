@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.1.9 - 2025-01-08
+
+### Features
+
+- Use `integer` instead of `int` for column casting
+
 ## v0.1.8 - 2025-01-01
 
 ### Features
