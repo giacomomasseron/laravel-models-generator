@@ -101,7 +101,7 @@ class Table extends Entity
     {
         foreach ($this->hasMany as $key => $hasMany) {
             if ($this->thereIsAnotherHasMany($hasMany)) {
-                $this->hasMany[$key]->name = Str::camel(Str::plural($hasMany->name)).'As'.ucfirst(Str::camel(str_replace($this->primaryKey?->name ?? '', '', $hasMany->foreignKeyName)));
+                $this->hasMany[$key]->name = Str::camel(Str::plural($hasMany->name)).'As'.ucfirst(Str::camel(str_replace($this->primaryKey->name ?? '', '', $hasMany->foreignKeyName)));
             } else {
                 $this->hasMany[$key]->name = Str::camel(Str::plural($hasMany->name));
             }
