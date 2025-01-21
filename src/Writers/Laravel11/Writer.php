@@ -175,7 +175,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
                 $body .= "\n".$this->spacer.'use '.end($parts).';';
             }
 
-            //$body .= "\n";
+            // $body .= "\n";
 
             return $body;
         }

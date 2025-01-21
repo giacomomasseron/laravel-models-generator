@@ -78,7 +78,7 @@ class Connector extends DriverConnector implements DriverConnectorInterface
 
         $sql = "SHOW FULL TABLES IN $this->schema WHERE TABLE_TYPE LIKE 'VIEW'";
         $rows = DB::select($sql);
-        //dd($rows);
+        // dd($rows);
 
         foreach ($rows as $row) {
             $columnName = "Tables_in_{$this->schema}";
