@@ -33,6 +33,8 @@ This is the contents of the published config file:
 return [
     'clean_models_directory_before_generation' => true,
 
+    'generate_views' => false,
+
     /*
     |--------------------------------------------------------------------------
     | Strict types

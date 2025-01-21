@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator\Writers;
 
-use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Entity;
 
 abstract class Writer implements WriterInterface
 {
     public string $spacer = '    ';
 
-    public function __construct(public string $className, public Table $table, public string $stubContent, protected bool $isBase = false) {}
+    public function __construct(public string $className, public Entity $entity, public string $stubContent, protected bool $isBase = false) {}
 
     public function writeModelFile(): string
     {
@@ -66,7 +66,7 @@ abstract class Writer implements WriterInterface
 
     public function namespace(): string
     {
-        return $this->table->namespace ?? (string) config('models-generator.namespace', 'App\Models');
+        return $this->entity->namespace ?? (string) config('models-generator.namespace', 'App\Models');
     }
 
     public function strict(): string

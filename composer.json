@@ -23,7 +23,7 @@
         "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
-        "larastan/larastan": "^2.9",
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.14",
         "nunomaduro/collision": "^8.1.1||^7.10.0",
         "orchestra/testbench": "^9.0.0||^8.22.0",
@@ -37,9 +37,11 @@
         "rector/rector": "^1.2"
     },
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
-            "GiacomoMasseroni\\LaravelModelsGenerator\\": "src/",
-            "GiacomoMasseroni\\LaravelModelsGenerator\\Database\\Factories\\": "database/factories/"
+            "GiacomoMasseroni\\LaravelModelsGenerator\\": "src/"
         }
     },
     "autoload-dev": {

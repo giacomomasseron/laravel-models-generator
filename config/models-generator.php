@@ -6,6 +6,8 @@ declare(strict_types=1);
 return [
     'clean_models_directory_before_generation' => true,
 
+    'generate_views' => false,
+
     /*
     |--------------------------------------------------------------------------
     | Strict types

@@ -17,19 +17,19 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function imports(): string
     {
-        asort($this->table->imports);
+        asort($this->entity->imports);
 
         return implode("\n", array_map(function (string $import) {
             return "use $import;";
-        }, array_unique($this->table->imports)));
+        }, array_unique($this->entity->imports)));
     }
 
     public function properties(): string
     {
-        if (count($this->table->properties) > 0) {
+        if (count($this->entity->properties) > 0) {
             return "\n".' *'."\n".implode("\n", array_map(function (Property $property) {
                 return ' * @property'.($property->readOnly ? '-read' : '').' '.$property->return.' '.$property->field;
-            }, $this->table->properties));
+            }, $this->entity->properties));
         }
 
         return '';
@@ -37,16 +37,16 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function parent(): string
     {
-        $parent = $this->table->parent ?? 'Model';
+        $parent = $this->entity->parent ?? 'Model';
 
-        if (count($this->table->interfaces) > 0) {
-            asort($this->table->interfaces);
+        if (count($this->entity->interfaces) > 0) {
+            asort($this->entity->interfaces);
 
             $parent .= ' implements '.implode(', ', array_map(function (string $interface) {
                 $parts = explode('\\', $interface);
 
                 return end($parts);
-            }, $this->table->interfaces));
+            }, $this->entity->interfaces));
 
             return $parent;
         }
@@ -56,8 +56,8 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function table(): string
     {
-        if ($this->table->showTableProperty) {
-            return $this->spacer.'protected $table = \''.$this->table->name.'\';'."\n"."\n";
+        if ($this->entity->showTableProperty) {
+            return "\n"."\n".$this->spacer.'protected $table = \''.$this->entity->name.'\';';
         }
 
         return '';
@@ -67,14 +67,14 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     {
         $body = '';
 
-        if ($this->table->primaryKey !== null) {
+        if ($this->entity->primaryKey !== null) {
             if (config('models-generator.primary_key')) {
-                $body = $this->spacer.'protected $primaryKey = \''.$this->table->primaryKey->name.'\';'."\n"."\n";
-            }
+                $body = "\n"."\n".$this->spacer.'protected $primaryKey = \''.$this->entity->primaryKey->name.'\';';
 
-            if (! $this->table->primaryKey->autoIncrement) {
-                $body .= $this->spacer.'public $incrementing = false;'."\n"."\n";
-                $body .= $this->spacer.'protected $keyType = \'string\';'."\n"."\n";
+                if (! $this->entity->primaryKey->autoIncrement) {
+                    $body .= "\n"."\n".$this->spacer.'public $incrementing = false;'."\n"."\n";
+                    $body .= $this->spacer.'protected $keyType = \'string\';';
+                }
             }
         }
 
@@ -83,21 +83,21 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function timestamps(): string
     {
-        return $this->table->showTimestampsProperty ? $this->spacer.'public $timestamps = '.($this->table->timestamps ? 'true' : 'false').';'."\n"."\n" : '';
+        return $this->entity->showTimestampsProperty ? "\n"."\n".$this->spacer.'public $timestamps = '.($this->entity->timestamps ? 'true' : 'false').';' : '';
     }
 
     public function casts(): string
     {
         $body = '';
 
-        if (count($this->table->casts) > 0) {
+        if (count($this->entity->casts) > 0) {
             $body .= "\n"."\n".$this->spacer.'/**'."\n";
             $body .= $this->spacer.' * @return array<string, string>'."\n";
             $body .= $this->spacer.' */'."\n";
             $body .= $this->spacer.'protected function casts(): array'."\n";
             $body .= $this->spacer.'{'."\n";
             $body .= str_repeat($this->spacer, 2).'return ['."\n";
-            foreach ($this->table->casts as $column => $type) {
+            foreach ($this->entity->casts as $column => $type) {
                 if (array_key_exists($column, (array) config('models-generator.enums_casting', []))) {
                     $type = '\\'.config('models-generator.enums_casting', [])[$column].'::class';
                 } else {
@@ -127,14 +127,14 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function fillable(): string
     {
-        if (count($this->table->fillable) > 0) {
-            $body = $this->spacer.'/**'."\n";
+        if (count($this->entity->fillable) > 0) {
+            $body = "\n"."\n".$this->spacer.'/**'."\n";
             $body .= $this->spacer.' * The attributes that are mass assignable.'."\n";
             $body .= $this->spacer.' *'."\n";
             $body .= $this->spacer.' * @var list<string>'."\n";
             $body .= $this->spacer.' */'."\n";
             $body .= $this->spacer.'protected $fillable = ['."\n";
-            foreach ($this->table->fillable as $fillable) {
+            foreach ($this->entity->fillable as $fillable) {
                 $body .= str_repeat($this->spacer, 2).'\''.$fillable.'\','."\n";
             }
             $body .= $this->spacer.'];';
@@ -147,9 +147,9 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function hidden(): string
     {
-        if (count($this->table->hidden) > 0) {
+        if (count($this->entity->hidden) > 0) {
             $body = "\n"."\n".$this->spacer.'protected $hidden = ['."\n";
-            foreach ($this->table->hidden as $hidden) {
+            foreach ($this->entity->hidden as $hidden) {
                 $body .= str_repeat($this->spacer, 2).'\''.$hidden.'\','."\n";
             }
             $body .= $this->spacer.'];';
@@ -162,8 +162,8 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function traits(): string
     {
-        $traitsToUse = $this->table->traits;
-        if ($this->table->softDeletes) {
+        $traitsToUse = $this->entity->traits;
+        if ($this->entity->softDeletes) {
             $traitsToUse[] = 'SoftDeletes';
         }
         if (count($traitsToUse) > 0) {
@@ -172,10 +172,10 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $body = '';
             foreach ($traitsToUse as $trait) {
                 $parts = explode('\\', $trait);
-                $body .= $this->spacer.'use '.end($parts).';'."\n";
+                $body .= "\n".$this->spacer.'use '.end($parts).';';
             }
 
-            $body .= "\n";
+            //$body .= "\n";
 
             return $body;
         }
@@ -186,7 +186,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     private function hasMany(): string
     {
         $content = '';
-        foreach ($this->table->hasMany as $hasMany) {
+        foreach ($this->entity->hasMany as $hasMany) {
             $relatedClassName = ucfirst(Str::camel($hasMany->related));
 
             $content .= "\n"."\n";
@@ -206,14 +206,14 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     private function belongTo(): string
     {
         $content = '';
-        foreach ($this->table->belongsTo as $belongsTo) {
+        foreach ($this->entity->belongsTo as $belongsTo) {
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
             $content .= $this->spacer.' * @return BelongsTo<'.$belongsTo->foreignClassName.', $this>'."\n";
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$belongsTo->name.'(): BelongsTo'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->localColumnName.'\''.(($this->table->primaryKey?->name ?? '') != $belongsTo->foreignColumnName ? ', \''.$belongsTo->foreignColumnName.'\'' : '').');'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->localColumnName.'\''.(($this->entity->primaryKey?->name ?? '') != $belongsTo->foreignColumnName ? ', \''.$belongsTo->foreignColumnName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
         }
 
@@ -224,7 +224,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     {
         $content = '';
 
-        foreach ($this->table->belongsToMany as $belongsToMany) {
+        foreach ($this->entity->belongsToMany as $belongsToMany) {
             $withPivot = count($belongsToMany->pivotAttributes);
 
             $content .= "\n"."\n";
@@ -245,7 +245,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     private function morphTo(): string
     {
         $content = '';
-        foreach ($this->table->morphTo as $morphTo) {
+        foreach ($this->entity->morphTo as $morphTo) {
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
             $content .= $this->spacer.' * @return MorphTo<Model, $this>'."\n";
@@ -262,7 +262,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     private function morphMany(): string
     {
         $content = '';
-        foreach ($this->table->morphMany as $morphMany) {
+        foreach ($this->entity->morphMany as $morphMany) {
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
             $content .= $this->spacer.' * @return MorphMany<'.$morphMany->related.', $this>'."\n";
@@ -278,6 +278,6 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function abstract(): string
     {
-        return $this->table->abstract ? 'abstract ' : '';
+        return $this->entity->abstract ? 'abstract ' : '';
     }
 }

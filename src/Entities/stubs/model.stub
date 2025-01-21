@@ -8,6 +8,5 @@ namespace {{namespace}};
  * Class {{className}}{{properties}}
  */
 {{abstract}}class {{className}} extends {{parent}}
-{
-{{body}}
+{{{body}}
 }

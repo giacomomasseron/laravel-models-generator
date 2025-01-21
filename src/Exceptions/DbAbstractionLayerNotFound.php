@@ -7,7 +7,7 @@ namespace GiacomoMasseroni\LaravelModelsGenerator\Exceptions;
 use Exception;
 use Throwable;
 
-class DatabaseDriverNotFound extends Exception
+class DbAbstractionLayerNotFound extends Exception
 {
     public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
     {
