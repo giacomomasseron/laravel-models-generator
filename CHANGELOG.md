@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.2.0 - 2025-01-21
+
+### Features
+
+- add `generate_views` config param to create views
+- fix #4
+
 ## v0.1.9 - 2025-01-08
 
 ### Features
