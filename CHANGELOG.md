@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.2.1 - 2025-01-21
+
+### Features
+
+- fix PHPStan errors
+
 ## v0.2.0 - 2025-01-21
 
 ### Features
