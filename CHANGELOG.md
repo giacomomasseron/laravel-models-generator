@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.2.2 - 2025-01-24
+
+### Features
+
+- add `relationships_name_case_type` config param to define the way relationships name are created
+
 ## v0.2.1 - 2025-01-21
 
 ### Features
