@@ -7,6 +7,7 @@ namespace GiacomoMasseroni\LaravelModelsGenerator\Entities;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsToMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\HasMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Helpers\NamingHelper;
 use Illuminate\Support\Str;
 
 class Table extends Entity
@@ -23,9 +24,6 @@ class Table extends Entity
         $alreadyInserted = false;
         foreach ($this->belongsToMany as $rel) {
             if ($rel->pivot === $belongsToMany->pivot && $rel->related === $belongsToMany->related) {
-                if ($this->name == 'allotment') {
-                    info(print_r($belongsToMany, true));
-                }
                 $alreadyInserted = true;
             }
         }
@@ -43,7 +41,7 @@ class Table extends Entity
                 $relationName = Str::camel(str_replace("{$this->name}_", '', $belongsToMany->pivot).'_'.Str::plural($related));
             }
             $foreignClassName = ucfirst(Str::camel(Str::singular($belongsToMany->related)));
-            $belongsToMany->name = $relationName;
+            $belongsToMany->name = NamingHelper::caseRelationName($relationName);
             $belongsToMany->foreignClassName = $foreignClassName;
 
             $this->belongsToMany[] = $belongsToMany;
@@ -73,7 +71,7 @@ class Table extends Entity
             } else {
                 $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
             }
-            $belongsTo->name = $relationName;
+            $belongsTo->name = NamingHelper::caseRelationName($relationName);
             $belongsTo->foreignClassName = $foreignClassName;
             $belongsTo->foreignColumnName = $foreignColumnName;
             $belongsTo->localColumnName = $localColumnName;
@@ -101,9 +99,9 @@ class Table extends Entity
     {
         foreach ($this->hasMany as $key => $hasMany) {
             if ($this->thereIsAnotherHasMany($hasMany)) {
-                $this->hasMany[$key]->name = Str::camel(Str::plural($hasMany->name)).'As'.ucfirst(Str::camel(str_replace($this->primaryKey->name ?? '', '', $hasMany->foreignKeyName)));
+                $this->hasMany[$key]->name = NamingHelper::caseRelationName(Str::camel(Str::plural($hasMany->name)).'As'.ucfirst(Str::camel(str_replace($this->primaryKey->name ?? '', '', $hasMany->foreignKeyName))));
             } else {
-                $this->hasMany[$key]->name = Str::camel(Str::plural($hasMany->name));
+                $this->hasMany[$key]->name = NamingHelper::caseRelationName(Str::plural($hasMany->name));
             }
             $this->properties[] = new Property('$'.$hasMany->name, 'Collection|'.$hasMany->related.'[]', false);
             $this->imports[] = 'Illuminate\Database\Eloquent\Collection';

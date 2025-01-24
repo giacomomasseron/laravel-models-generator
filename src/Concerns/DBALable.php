@@ -35,6 +35,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Enums\ColumnTypeEnum;
+use GiacomoMasseroni\LaravelModelsGenerator\Helpers\NamingHelper;
 use Illuminate\Support\Str;
 
 /**
@@ -198,7 +199,7 @@ trait DBALable
             foreach (config('models-generator.morphs') as $table => $relationship) {
                 if ($table == $dbTable->name) {
                     $dbTable->morphMany[] = new MorphMany(
-                        Str::camel(Str::plural($morphables[$relationship])),
+                        NamingHelper::caseRelationName(Str::plural($morphables[$relationship])),
                         $morphables[$relationship],
                         $relationship,
                     );

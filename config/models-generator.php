@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 // config for GiacomoMasseroni/LaravelModelsGenerator
+use GiacomoMasseroni\LaravelModelsGenerator\Enums\RelationshipsNameCaseTypeEnum;
+
 return [
     'clean_models_directory_before_generation' => true,
 
@@ -106,6 +108,17 @@ return [
         'enabled' => false,
         'abstract' => true,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships name case type
+    |--------------------------------------------------------------------------
+    |
+    | Define the way relation name are created.
+    | Possible values: "camel_case", "snake_case"
+    |
+    */
+    'relationships_name_case_type' => RelationshipsNameCaseTypeEnum::CAMEL_CASE,
 
     /*
     |--------------------------------------------------------------------------

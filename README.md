@@ -136,6 +136,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Relationships name case type
+    |--------------------------------------------------------------------------
+    |
+    | Define the way relation name are created.
+    | Possible values: "camel_case", "snake_case"
+    |
+    */
+    'relationships_name_case_type' => RelationshipsNameCaseTypeEnum::CAMEL_CASE,
+
+    /*
+    |--------------------------------------------------------------------------
     | Polymorphic relationships
     |--------------------------------------------------------------------------
     |
