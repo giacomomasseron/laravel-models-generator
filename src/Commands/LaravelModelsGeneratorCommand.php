@@ -178,7 +178,9 @@ class LaravelModelsGeneratorCommand extends Command
 
     private function getTable(): ?string
     {
-        return $this->option('table');
+        $table = $this->option('table');
+
+        return is_string($table) ? $table : null;
     }
 
     private function entityToGenerate(string $entity): bool
