@@ -24,7 +24,7 @@ use Illuminate\Support\Str;
 if (! function_exists('dbEntityNameToModelName')) {
     function dbEntityNameToModelName(string $dbEntityName): string
     {
-        return ucfirst(Str::camel(Str::singular($dbEntityName)));
+        return ucfirst(Str::camel(Str::singular(str_replace(config('models-generator.table_prefix', ''), '', $dbEntityName))));
     }
 }
 
