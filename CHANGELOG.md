@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.2.3 - 2025-03-13
+
+### Features
+
+- add `prefix_table` config param to remove table prefix value from generated models
+
 ## v0.2.2 - 2025-01-24
 
 ### Features
