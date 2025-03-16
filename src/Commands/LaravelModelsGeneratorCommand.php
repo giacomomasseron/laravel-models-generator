@@ -9,7 +9,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverFacade;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Entity;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Exceptions\DatabaseDriverNotFound;
-use GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel11\Writer;
+use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
@@ -38,6 +38,8 @@ class LaravelModelsGeneratorCommand extends Command
      */
     public function handle(): int
     {
+        $laravelVersion = $this->resolveLaravelVersion();
+
         $connection = $this->getConnection();
         $schema = $this->getSchema($connection);
         $this->singleEntityToCreate = $this->getTable();
@@ -158,7 +160,9 @@ class LaravelModelsGeneratorCommand extends Command
                 $dbEntity->fixRelationshipsName();
             }
 
-            $writer = new Writer($className, $dbEntity, $content);
+            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel'.$this->resolveLaravelVersion().'\\Writer';
+            /** @var WriterInterface $writer */
+            $writer = new $versionedWriter($className, $dbEntity, $content);
 
             return $writer->writeModelFile();
         }
@@ -201,5 +205,10 @@ class LaravelModelsGeneratorCommand extends Command
         /*if (! file_exists(base_path($path))) {
             mkdir(base_path($path), 0755, true);
         }*/
+    }
+
+    private function resolveLaravelVersion(): int
+    {
+        return (int) strstr(app()->version(), '.', true);
     }
 }

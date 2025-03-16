@@ -10,6 +10,8 @@ abstract class Writer implements WriterInterface
 {
     public string $spacer = '    ';
 
+    public bool $prevElementWasNotEmpty = false;
+
     public function __construct(public string $className, public Entity $entity, public string $stubContent, protected bool $isBase = false) {}
 
     public function writeModelFile(): string
@@ -42,11 +44,7 @@ abstract class Writer implements WriterInterface
 
     abstract public function abstract(): string;
 
-    abstract public function table(): string;
-
     abstract public function primaryKey(): string;
-
-    abstract public function timestamps(): string;
 
     abstract public function fillable(): string;
 
@@ -60,7 +58,7 @@ abstract class Writer implements WriterInterface
 
     abstract public function relationships(): string;
 
-    abstract public function body(): string;
+    // abstract public function body(): string;
 
     abstract public function parent(): string;
 
@@ -72,5 +70,40 @@ abstract class Writer implements WriterInterface
     public function strict(): string
     {
         return config('models-generator.strict_types', true) ? "\n".'declare(strict_types=1);'."\n" : '';
+    }
+
+    public function body(): string
+    {
+        return $this->traits().$this->table().$this->primaryKey().$this->timestamps().$this->fillable().$this->hidden().$this->casts().$this->relationships();
+    }
+
+    public function table(): string
+    {
+        if ($this->entity->showTableProperty) {
+            $content = '';
+            if ($this->prevElementWasNotEmpty) {
+                $content = "\n";
+            }
+
+            $this->prevElementWasNotEmpty = true;
+
+            return $content."\n".$this->spacer.'protected $table = \''.$this->entity->name.'\';'."\n";
+        }
+
+        $this->prevElementWasNotEmpty = false;
+
+        return '';
+    }
+
+    public function timestamps(): string
+    {
+        $content = '';
+        if ($this->prevElementWasNotEmpty) {
+            $content = "\n";
+        }
+
+        $this->prevElementWasNotEmpty = true;
+
+        return $this->entity->showTimestampsProperty ? $content."\n".$this->spacer.'public $timestamps = '.($this->entity->timestamps ? 'true' : 'false').';' : '';
     }
 }
