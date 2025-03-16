@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.2.4 - 2025-03-16
+
+### Features
+
+- added compatibility with Laravel 10
+
 ## v0.2.3 - 2025-03-13
 
 ### Features
