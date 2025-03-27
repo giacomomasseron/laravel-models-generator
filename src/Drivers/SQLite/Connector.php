@@ -20,7 +20,6 @@ class Connector extends DriverConnector implements DriverConnectorInterface
     use DBALable;
 
     /**
-     * @throws DatabaseDriverNotFound
      * @throws Exception
      */
     public function __construct(?string $connection = null, ?string $schema = null, ?string $table = null)

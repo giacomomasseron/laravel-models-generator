@@ -148,6 +148,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Add comments in PHPDocs
+    |--------------------------------------------------------------------------
+    |
+    | Add comments to PHPDocs column property (Ex. @property int $id (comment))
+    |
+    */
+    'add_comments_in_phpdocs' => true,
+    
+    /*
+    |--------------------------------------------------------------------------
     | Relationships name case type
     |--------------------------------------------------------------------------
     |
@@ -237,6 +247,7 @@ php artisan laravel-models-generator:generate
 
 - MySQL
 - SQLite
+- PostgreSQL
 
 Coming soon ... all drivers supported by doctrine/dbal.
 

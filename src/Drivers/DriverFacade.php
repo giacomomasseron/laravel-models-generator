@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator\Drivers;
 
+use Doctrine\DBAL\Exception;
 use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DriverConnectorInterface;
 use GiacomoMasseroni\LaravelModelsGenerator\Exceptions\DatabaseDriverNotFound;
 
 class DriverFacade
 {
     /**
-     * @throws DatabaseDriverNotFound
+     * @throws DatabaseDriverNotFound|Exception
      */
     public static function instance(string $driver, ?string $connection = null, ?string $schema = null, ?string $table = null): DriverConnectorInterface
     {

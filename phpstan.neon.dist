@@ -13,3 +13,4 @@ parameters:
     ignoreErrors:
         - '#Property GiacomoMasseroni\\LaravelModelsGenerator\\Drivers\\SQLite\\Connector::\$sm with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager does not specify its types: T#'
         - '#Property GiacomoMasseroni\\LaravelModelsGenerator\\Drivers\\MySQL\\Connector::\$sm with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager does not specify its types: T#'
+        - '#Property GiacomoMasseroni\\LaravelModelsGenerator\\Drivers\\PostgreSQL\\Connector::\$sm with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager does not specify its types: T#'

@@ -121,7 +121,11 @@ trait DBALable
                 $laravelColumnType = $this->laravelColumnType($this->mapColumnType($column->getType()), $dbTable);
                 $dbTable->casts[$column->getName()] = $this->laravelColumnTypeForCast($this->mapColumnType($column->getType()), $dbTable);
 
-                $properties[] = new Property('$'.$column->getName(), ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null')); // $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
+                $properties[] = new Property(
+                    '$'.$column->getName(),
+                    ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null'),
+                    comment: $column->getComment()
+                ); // $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
 
                 // Get morph
                 if (str_ends_with($column->getName(), '_type') && in_array(str_replace('_type', '', $column->getName()).'_id', array_keys($columns))) {

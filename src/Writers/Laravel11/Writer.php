@@ -25,7 +25,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $this->prevElementWasNotEmpty = true;
 
             return "\n".' *'."\n".implode("\n", array_map(function (Property $property) {
-                return ' * @property'.($property->readOnly ? '-read' : '').' '.$property->return.' '.$property->field;
+                return ' * @property'.($property->readOnly ? '-read' : '').' '.$property->return.' '.$property->field.(config('models-generator.add_comments_in_phpdocs', true) && ! empty($property->comment) ? " ({$property->comment})" : '');
             }, $this->entity->properties));
         }
 
