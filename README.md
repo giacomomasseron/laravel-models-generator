@@ -245,6 +245,7 @@ php artisan laravel-models-generator:generate
 
 ## Drivers supported
 
+- MariaDB
 - MySQL
 - SQLite
 - PostgreSQL
