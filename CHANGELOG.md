@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.3.0 - 2025-03-27
+
+### Features
+
+- Add PostgreSQL compatibility
+
 ## v0.2.4 - 2025-03-16
 
 ### Features
