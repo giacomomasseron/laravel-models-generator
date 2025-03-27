@@ -75,7 +75,7 @@ class Connector extends DriverConnector implements DriverConnectorInterface
         /** @var array<string, View> $dbViews */
         $dbViews = [];
 
-        $sql = "SELECT table_name FROM INFORMATION_SCHEMA.views WHERE table_schema = ANY (current_schemas(false))";
+        $sql = 'SELECT table_name FROM INFORMATION_SCHEMA.views WHERE table_schema = ANY (current_schemas(false))';
         $rows = DB::select($sql);
         // dd($rows);
 
