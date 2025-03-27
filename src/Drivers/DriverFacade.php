@@ -17,6 +17,7 @@ class DriverFacade
         return match ($driver) {
             'mysql' => new MySQL\Connector($connection, $schema, $table),
             'sqlite' => new SQLite\Connector($connection, $schema, $table),
+            'pgsql' => new PostgreSQL\Connector($connection, $schema, $table),
             default => throw new DatabaseDriverNotFound($driver),
         };
     }
