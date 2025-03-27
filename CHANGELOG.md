@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.3.1 - 2025-03-27
+
+### Features
+
+- Add comments to PHPDocs column property (Ex. @property int $id (comment))
+
 ## v0.3.0 - 2025-03-27
 
 ### Features

@@ -12,7 +12,6 @@ use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DriverConnectorInterface;
 use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverConnector;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Property;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\View;
-use GiacomoMasseroni\LaravelModelsGenerator\Exceptions\DatabaseDriverNotFound;
 use Illuminate\Support\Facades\DB;
 
 class Connector extends DriverConnector implements DriverConnectorInterface
