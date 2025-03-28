@@ -15,6 +15,17 @@ Major features:
 - Polymorphic relationships
 - Enums casting
 
+
+## Drivers supported
+
+- MariaDB
+- MySQL
+- SQLite
+- PostgreSQL
+
+Coming soon ... all drivers supported by doctrine/dbal.
+
+
 ## Installation
 
 You can install the package via composer:
@@ -241,16 +252,6 @@ return [
 ```bash
 php artisan laravel-models-generator:generate
 ```
-
-
-## Drivers supported
-
-- MariaDB
-- MySQL
-- SQLite
-- PostgreSQL
-
-Coming soon ... all drivers supported by doctrine/dbal.
 
 ## Polymorphic relationships
 
