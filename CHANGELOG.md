@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.3.2 - 2025-03-29
+
+### Features
+
+- Add config value to customize timestamps fields
+
 ## v0.3.1 - 2025-03-27
 
 ### Features
