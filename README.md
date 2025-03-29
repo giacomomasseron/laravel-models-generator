@@ -262,6 +262,21 @@ return [
         'personal_access_tokens',
         'password_reset_tokens',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Excluded Columns
+    |--------------------------------------------------------------------------
+    |
+    | These columns will not be added to $fillable array.
+    | You can use a string or any valid pattern for preg_match function.
+    | Ex. '/your_pattern/'
+    |     '/your_pattern/i' (case-insensitive)
+    |     'column_not_to_generate'
+    |
+    */
+    'exclude_columns' => [
+    ],
 ];
 ```
 

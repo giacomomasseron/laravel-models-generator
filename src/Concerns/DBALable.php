@@ -103,12 +103,29 @@ trait DBALable
                     break;
                 }
             }
-            $dbTable->fillable = array_diff(
-                array_keys($columns),
-                array_merge(
-                    ['created_at', 'updated_at', 'deleted_at'],
-                    $dbTable->primaryKey !== null ? (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey->name) ? [] : [$dbTable->primaryKey->name]) : []
-                )
+            $dbTable->fillable = array_filter(
+                array_diff(
+                    array_keys($columns),
+                    array_merge(
+                        ['created_at', 'updated_at', 'deleted_at'],
+                        $dbTable->primaryKey !== null ? (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey->name) ? [] : [$dbTable->primaryKey->name]) : []
+                    )
+                ),
+                static function (string $column): bool {
+                    foreach (config('models-generator.exclude_columns', []) as $pattern) {
+                        if (@preg_match($pattern, '') === false) {
+                            $found = $pattern === $column;
+                        } else {
+                            $found = (bool) preg_match($pattern, $column);
+                        }
+
+                        if ($found) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
             );
             if (in_array('password', $dbTable->fillable)) {
                 $dbTable->hidden = ['password'];
