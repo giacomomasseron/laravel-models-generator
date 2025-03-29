@@ -104,6 +104,20 @@ abstract class Writer implements WriterInterface
 
         $this->prevElementWasNotEmpty = true;
 
+        if ($this->entity->showTimestampsProperty && $this->entity->timestamps) {
+            $timestampsFields = config('models-generator.timestamps.fields', []);
+            if (! empty($timestampsFields['created_at'])) {
+                $content .= "\n".$this->spacer.'public const CREATED_AT = \''.$timestampsFields['created_at'].'\';'."\n";
+            }
+            if (! empty($timestampsFields['updated_at'])) {
+                $content .= "\n".$this->spacer.'public const UPDATED_AT = \''.$timestampsFields['updated_at'].'\';'."\n";
+            }
+
+            if (! empty(config('models-generator.timestamps.format', null))) {
+                $content .= "\n".$this->spacer.'protected $dateFormat = \''.config('models-generator.timestamps.format').'\';'."\n";
+            }
+        }
+
         return $this->entity->showTimestampsProperty ? $content."\n".$this->spacer.'public $timestamps = '.($this->entity->timestamps ? 'true' : 'false').';' : '';
     }
 }

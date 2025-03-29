@@ -101,6 +101,24 @@ return [
     |
     */
     'primary_key_in_fillable' => true,
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Timestamps customized fields
+    |--------------------------------------------------------------------------
+    |
+    | Change the default Laravel timestamps fields.
+    | Ex. created_at => 'created_at',
+    |     updated_at => 'updated_at'
+    |
+    */
+    'timestamps' => [
+        'fields' => [
+            'created_at' => null,
+            'updated_at' => null,
+        ],
+        'format' => null,
+    ],
 
     /*
     |--------------------------------------------------------------------------
