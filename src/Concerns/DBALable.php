@@ -348,7 +348,6 @@ trait DBALable
     }
 
     /**
-     * @param Table $dbTable
      * @return list<string>
      */
     private function getArrayWithPrimaryKey(Table $dbTable): array
