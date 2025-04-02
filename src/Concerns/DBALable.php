@@ -347,6 +347,10 @@ trait DBALable
         return ColumnTypeEnum::STRING;
     }
 
+    /**
+     * @param Table $dbTable
+     * @return list<string>
+     */
     private function getArrayWithPrimaryKey(Table $dbTable): array
     {
         return $dbTable->primaryKey !== null ? (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey->name) ? [] : [$dbTable->primaryKey->name]) : [];
