@@ -108,7 +108,7 @@ trait DBALable
                     array_keys($columns),
                     array_merge(
                         ['created_at', 'updated_at', 'deleted_at'],
-                        $dbTable->primaryKey !== null ? (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey->name) ? [] : [$dbTable->primaryKey->name]) : []
+                        $this->getArrayWithPrimaryKey($dbTable)
                     )
                 ),
                 static function (string $column): bool {
@@ -233,14 +233,18 @@ trait DBALable
 
     public function laravelColumnTypeForCast(ColumnTypeEnum $type, ?Entity $dbTable = null): string
     {
-        if ($type == ColumnTypeEnum::INT) {
+        return match ($type) {
+            ColumnTypeEnum::INT => 'integer',
+            ColumnTypeEnum::DATETIME => 'datetime',
+            ColumnTypeEnum::FLOAT => 'float',
+            ColumnTypeEnum::BOOLEAN => 'boolean',
+            default => 'string',
+        };
+
+        /*if ($type == ColumnTypeEnum::INT) {
             return 'integer';
         }
         if ($type == ColumnTypeEnum::DATETIME) {
-            /*if ($dbTable !== null) {
-                $dbTable->imports[] = 'Carbon\Carbon';
-            }*/
-
             return 'datetime';
         }
         if ($type == ColumnTypeEnum::STRING) {
@@ -253,7 +257,7 @@ trait DBALable
             return 'bool';
         }
 
-        return 'string';
+        return 'string';*/
     }
 
     public function laravelColumnType(ColumnTypeEnum $type, ?Entity $dbTable = null): string
@@ -341,5 +345,10 @@ trait DBALable
         }
 
         return ColumnTypeEnum::STRING;
+    }
+
+    private function getArrayWithPrimaryKey(Table $dbTable): array
+    {
+        return $dbTable->primaryKey !== null ? (config('models-generator.primary_key_in_fillable', false) && ! empty($dbTable->primaryKey->name) ? [] : [$dbTable->primaryKey->name]) : [];
     }
 }
