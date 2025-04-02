@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.3.3 - 2025-03-29
+
+### Features
+
+- Add `exclude_columns` config value to exclude columns from fillable array
+
 ## v0.3.2 - 2025-03-29
 
 ### Features
