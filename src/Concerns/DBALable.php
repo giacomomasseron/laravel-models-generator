@@ -178,27 +178,27 @@ trait DBALable
                 if (count($dbTable->belongsTo) > 1) {
                     foreach ($dbTable->belongsTo as $subForeignName => $subBelongsTo) {
                         $subForeignTableName = $subBelongsTo->foreignKey->getForeignTableName();
+
                         if ($foreignTableName != $subForeignTableName) {
-
-                            $tableIndexes = $this->getEntityIndexes($dbTables[$foreignTableName]->name);
-                            $relatedTableIndexes = $this->getEntityIndexes($subForeignTableName);
-                            $pivotIndexes = $this->getEntityIndexes($dbTable->name);
-
-                            $foreignPivotKey = $tableIndexes['primary']->getColumns()[0];
-                            $relatedPivotKey = $relatedTableIndexes['primary']->getColumns()[0];
-                            $pivotPrimaryKey = $pivotIndexes['primary']->getColumns()[0];
-
-                            $pivotColumns = $this->getEntityColumns($dbTable->name);
-                            $pivotTimestamps = array_key_exists('created_at', $pivotColumns) && array_key_exists('updated_at', $pivotColumns);
-                            $pivotAttributes = array_diff(
-                                array_keys($pivotColumns),
-                                array_merge(
-                                    [$foreignPivotKey, $relatedPivotKey, $pivotPrimaryKey],
-                                    $pivotTimestamps ? ['created_at', 'updated_at'] : []
-                                )
-                            );
-
                             if (isRelationshipToBeAdded($dbTable->name, $subForeignTableName)) {
+                                $tableIndexes = $this->getEntityIndexes($dbTables[$foreignTableName]->name);
+                                $relatedTableIndexes = $this->getEntityIndexes($subForeignTableName);
+                                $pivotIndexes = $this->getEntityIndexes($dbTable->name);
+
+                                $foreignPivotKey = $tableIndexes['primary']->getColumns()[0];
+                                $relatedPivotKey = $relatedTableIndexes['primary']->getColumns()[0];
+                                $pivotPrimaryKey = isset($pivotIndexes['primary']) ? $pivotIndexes['primary']->getColumns()[0] : null;
+
+                                $pivotColumns = $this->getEntityColumns($dbTable->name);
+                                $pivotTimestamps = array_key_exists('created_at', $pivotColumns) && array_key_exists('updated_at', $pivotColumns);
+                                $pivotAttributes = array_diff(
+                                    array_keys($pivotColumns),
+                                    array_merge(
+                                        [$foreignPivotKey, $relatedPivotKey, $pivotPrimaryKey],
+                                        $pivotTimestamps ? ['created_at', 'updated_at'] : []
+                                    )
+                                );
+
                                 $belongsToMany = new BelongsToMany(
                                     $subForeignTableName,
                                     $dbTable->name,

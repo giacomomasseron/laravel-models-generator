@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel11;
+namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel12;
 
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Property;
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;

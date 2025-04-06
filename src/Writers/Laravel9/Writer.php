@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel11;
+namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel9;
 
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Property;
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;
@@ -89,21 +89,18 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $this->prevElementWasNotEmpty = true;
 
             $body .= "\n"."\n".$this->spacer.'/**'."\n";
-            $body .= $this->spacer.' * @return array<string, string>'."\n";
+            $body .= $this->spacer.' * @var array<string, string>'."\n";
             $body .= $this->spacer.' */'."\n";
-            $body .= $this->spacer.'protected function casts(): array'."\n";
-            $body .= $this->spacer.'{'."\n";
-            $body .= str_repeat($this->spacer, 2).'return ['."\n";
+            $body .= $this->spacer.'protected $casts = ['."\n";
             foreach ($this->entity->casts as $column => $type) {
                 if (array_key_exists($column, (array) config('models-generator.enums_casting', []))) {
                     $type = '\\'.config('models-generator.enums_casting', [])[$column].'::class';
                 } else {
                     $type = '\''.$type.'\'';
                 }
-                $body .= str_repeat($this->spacer, 3).'\''.$column.'\' => '.$type.','."\n";
+                $body .= str_repeat($this->spacer, 2).'\''.$column.'\' => '.$type.','."\n";
             }
-            $body .= str_repeat($this->spacer, 2).'];'."\n";
-            $body .= $this->spacer.'}';
+            $body .= str_repeat($this->spacer, 1).'];';
 
             return $body;
         }
@@ -174,8 +171,6 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $traitsToUse[] = 'SoftDeletes';
         }
         if (count($traitsToUse) > 0) {
-            $this->prevElementWasNotEmpty = true;
-
             asort($traitsToUse);
 
             $body = '';
@@ -185,6 +180,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             }
 
             // $body .= "\n";
+            $this->prevElementWasNotEmpty = true;
 
             return $body;
         }
@@ -197,15 +193,16 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     private function hasMany(): string
     {
         $content = '';
+        $this->prevElementWasNotEmpty = false;
+
         foreach ($this->entity->hasMany as $hasMany) {
             $this->prevElementWasNotEmpty = true;
-
             $relatedClassName = ucfirst(Str::camel($hasMany->related));
 
             $content .= "\n"."\n";
 
             $content .= $this->spacer.'/**'."\n";
-            $content .= $this->spacer.' * @return HasMany<'.$relatedClassName.', $this>'."\n";
+            $content .= $this->spacer.' * @return HasMany<'.$relatedClassName.'>'."\n";
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$hasMany->name.'(): HasMany'."\n";
             $content .= $this->spacer.'{'."\n";
@@ -213,28 +210,26 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= $this->spacer.'}';
         }
 
-        $this->prevElementWasNotEmpty = false;
-
         return $content;
     }
 
     private function belongTo(): string
     {
         $content = '';
+        $this->prevElementWasNotEmpty = false;
+
         foreach ($this->entity->belongsTo as $belongsTo) {
             $this->prevElementWasNotEmpty = true;
 
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
-            $content .= $this->spacer.' * @return BelongsTo<'.$belongsTo->foreignClassName.', $this>'."\n";
+            $content .= $this->spacer.' * @return BelongsTo<'.$belongsTo->foreignClassName.', '.$this->className.'>'."\n";
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$belongsTo->name.'(): BelongsTo'."\n";
             $content .= $this->spacer.'{'."\n";
             $content .= str_repeat($this->spacer, 2).'return $this->belongsTo('.$belongsTo->foreignClassName.'::class, \''.$belongsTo->localColumnName.'\''.(($this->entity->primaryKey->name ?? '') != $belongsTo->foreignColumnName ? ', \''.$belongsTo->foreignColumnName.'\'' : '').');'."\n";
             $content .= $this->spacer.'}';
         }
-
-        $this->prevElementWasNotEmpty = false;
 
         return $content;
     }
@@ -251,7 +246,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
-            $content .= $this->spacer.' * @return BelongsToMany<'.$belongsToMany->foreignClassName.', $this>'."\n";
+            $content .= $this->spacer.' * @return BelongsToMany<'.$belongsToMany->foreignClassName.'>'."\n";
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$belongsToMany->name.'(): BelongsToMany'."\n";
             $content .= $this->spacer.'{'."\n";
@@ -267,10 +262,14 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     private function morphTo(): string
     {
         $content = '';
+        $this->prevElementWasNotEmpty = false;
+
         foreach ($this->entity->morphTo as $morphTo) {
+            $this->prevElementWasNotEmpty = true;
+
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
-            $content .= $this->spacer.' * @return MorphTo<Model, $this>'."\n";
+            $content .= $this->spacer.' * @return MorphTo<Model, '.$this->className.'>'."\n";
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$morphTo->name.'(): MorphTo'."\n";
             $content .= $this->spacer.'{'."\n";
@@ -284,7 +283,11 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     private function morphMany(): string
     {
         $content = '';
+        $this->prevElementWasNotEmpty = false;
+
         foreach ($this->entity->morphMany as $morphMany) {
+            $this->prevElementWasNotEmpty = true;
+
             $content .= "\n"."\n";
             $content .= $this->spacer.'/**'."\n";
             $content .= $this->spacer.' * @return MorphMany<'.$morphMany->related.', $this>'."\n";

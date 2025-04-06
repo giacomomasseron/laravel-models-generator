@@ -62,16 +62,19 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         $body = '';
         $this->prevElementWasNotEmpty = false;
 
-        if ($this->entity->primaryKey !== null) {
-            if (config('models-generator.primary_key')) {
-                $this->prevElementWasNotEmpty = true;
+        if (config('models-generator.primary_key')) {
+            $this->prevElementWasNotEmpty = true;
 
+            if ($this->entity->primaryKey !== null) {
                 $body = "\n".$this->spacer.'protected $primaryKey = \''.$this->entity->primaryKey->name.'\';';
 
                 if (! $this->entity->primaryKey->autoIncrement) {
                     $body .= "\n"."\n".$this->spacer.'public $incrementing = false;'."\n"."\n";
                     $body .= $this->spacer.'protected $keyType = \'string\';';
                 }
+            } else {
+                $body = "\n".$this->spacer.'protected $primaryKey = null;'."\n"."\n";
+                $body .= $this->spacer.'public $incrementing = false;';
             }
         }
 

@@ -7,10 +7,10 @@
 
 Generate Laravel models from an existing database.
 
-Compatible with Laravel 10/11.
+Compatible with Laravel 9/10/11/12.
 
 Major features:  
-- PHPStan level 9 compliant
+- PHPStan level 9/10 compliant
 - Laravel 11 style
 - Polymorphic relationships
 - Enums casting

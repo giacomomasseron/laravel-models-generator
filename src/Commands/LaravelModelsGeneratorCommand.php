@@ -11,6 +11,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Exceptions\DatabaseDriverNotFound;
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Filesystem\Filesystem;
 
 class LaravelModelsGeneratorCommand extends Command
@@ -38,8 +39,6 @@ class LaravelModelsGeneratorCommand extends Command
      */
     public function handle(): int
     {
-        $laravelVersion = $this->resolveLaravelVersion();
-
         $connection = $this->getConnection();
         $schema = $this->getSchema($connection);
         $this->singleEntityToCreate = $this->getTable();
@@ -151,7 +150,7 @@ class LaravelModelsGeneratorCommand extends Command
             }
 
             if ($dbEntity->softDeletes) {
-                $arImports[] = \Illuminate\Database\Eloquent\SoftDeletes::class;
+                $arImports[] = SoftDeletes::class;
             }
 
             $dbEntity->imports = array_merge($dbEntity->imports, $arImports);
