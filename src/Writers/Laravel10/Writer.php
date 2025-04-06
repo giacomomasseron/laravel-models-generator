@@ -291,7 +291,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $content .= $this->spacer.' */'."\n";
             $content .= $this->spacer.'public function '.$morphMany->name.'(): MorphMany'."\n";
             $content .= $this->spacer.'{'."\n";
-            $content .= str_repeat($this->spacer, 2).'return $this->morphMany('.$morphMany->related.'::class, \''.$morphMany->name.'\');'."\n";
+            $content .= str_repeat($this->spacer, 2).'return $this->morphMany('.$morphMany->related.'::class, \''.$morphMany->type.'\');'."\n";
             $content .= $this->spacer.'}';
         }
 

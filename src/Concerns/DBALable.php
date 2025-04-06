@@ -130,6 +130,7 @@ trait DBALable
             if (in_array('password', $dbTable->fillable)) {
                 $dbTable->hidden = ['password'];
             }
+
             $dbTable->timestamps = array_key_exists('created_at', $columns) && array_key_exists('updated_at', $columns);
             $dbTable->softDeletes = array_key_exists('deleted_at', $columns);
 
@@ -154,8 +155,9 @@ trait DBALable
             $dbTable->properties = $properties;
 
             foreach ($fks as $fk) {
-                $dbTable->addBelongsTo(new BelongsTo($fk));
-                // $dbTable->belongsTo[$fk->getName()] = new BelongsTo($fk);
+                if (isRelationshipToBeAdded($dbTable->name, $fk->getForeignTableName())) {
+                    $dbTable->addBelongsTo(new BelongsTo($fk));
+                }
             }
 
             $dbTables[$table->getName()] = $dbTable;
@@ -169,7 +171,9 @@ trait DBALable
                 if ($localKeyName == $dbTables[$foreignTableName]->primaryKey) {
                     $localKeyName = null;
                 }
-                $dbTables[$foreignTableName]->addHasMany(new HasMany($dbTable->className, $foreignKeyName, $localKeyName));
+                if (isRelationshipToBeAdded($dbTable->name, $foreignTableName)) {
+                    $dbTables[$foreignTableName]->addHasMany(new HasMany($dbTable->className, $foreignKeyName, $localKeyName));
+                }
 
                 if (count($dbTable->belongsTo) > 1) {
                     foreach ($dbTable->belongsTo as $subForeignName => $subBelongsTo) {
@@ -194,23 +198,18 @@ trait DBALable
                                 )
                             );
 
-                            $belongsToMany = new BelongsToMany(
-                                $subForeignTableName,
-                                $dbTable->name,
-                                $foreignPivotKey,
-                                $relatedPivotKey,
-                                pivotAttributes: $pivotAttributes
-                            );
-                            $belongsToMany->timestamps = $pivotTimestamps;
+                            if (isRelationshipToBeAdded($dbTable->name, $subForeignTableName)) {
+                                $belongsToMany = new BelongsToMany(
+                                    $subForeignTableName,
+                                    $dbTable->name,
+                                    $foreignPivotKey,
+                                    $relatedPivotKey,
+                                    pivotAttributes: $pivotAttributes
+                                );
+                                $belongsToMany->timestamps = $pivotTimestamps;
 
-                            $dbTables[$foreignTableName]->addBelongsToMany($belongsToMany);
-
-                            // TODO: do not why I added this code, it seems not working
-                            /*foreach ($dbTables[$foreignTableName]->hasMany as $key => $hasMany) {
-                                if ($hasMany->name == $dbTable->name) {
-                                    unset($dbTables[$foreignTableName]->hasMany[$key]);
-                                }
-                            }*/
+                                $dbTables[$foreignTableName]->addBelongsToMany($belongsToMany);
+                            }
                         }
                     }
                 }
@@ -348,7 +347,6 @@ trait DBALable
     }
 
     /**
-     * @param Table $dbTable
      * @return list<string>
      */
     private function getArrayWithPrimaryKey(Table $dbTable): array

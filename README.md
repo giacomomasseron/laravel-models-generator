@@ -242,6 +242,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Enum(s) implemented by all models
+    | Ex.
+    |   'column' => EnumClass::class,
     |
     */
     'enums_casting' => [
@@ -269,6 +271,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | These columns will not be added to $fillable array.
+    |
     | You can use a string or any valid pattern for preg_match function.
     | Ex. '/your_pattern/'
     |     '/your_pattern/i' (case-insensitive)
@@ -276,6 +279,21 @@ return [
     |
     */
     'exclude_columns' => [
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Excluded Relationships
+    |--------------------------------------------------------------------------
+    |
+    | These relationships will not be added to Model class.
+    | Ex.
+    |   'table_of_starting_relationship' => [
+    |       'table_of_relationship',
+    |   ],
+    |
+    */
+    'exclude_relationships' => [
     ],
 ];
 ```

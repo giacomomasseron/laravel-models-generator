@@ -67,3 +67,13 @@ if (! function_exists('laravelColumnTypeForCast')) {
         return null;
     }
 }
+
+if (! function_exists('isRelationshipToBeAdded')) {
+    function isRelationshipToBeAdded(string $tableOfStartingRelationship, string $tableOfRelationship): bool
+    {
+        /** @var array<string, array<string>> $excludeRelationships */
+        $excludeRelationships = config('models-generator.exclude_relationships', []);
+
+        return ! isset($excludeRelationships[$tableOfStartingRelationship]) || (in_array($tableOfRelationship, $excludeRelationships[$tableOfStartingRelationship]) === false);
+    }
+}
