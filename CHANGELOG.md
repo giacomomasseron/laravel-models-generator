@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.3.5 - 2025-04-06
+
+### Features
+
+- Add Laravel 9 and 12 compatibility
+- Manage correctly null primary keys
+
 ## v0.3.4 - 2025-04-06
 
 ### Features
