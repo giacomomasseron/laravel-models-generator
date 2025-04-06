@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.3.4 - 2025-04-06
+
+### Features
+
+- Fix `morph` relationship
+- Add `exclude_relationships` config value to avoid the creation of relationship
+
 ## v0.3.3 - 2025-03-29
 
 ### Features
