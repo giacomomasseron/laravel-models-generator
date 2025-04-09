@@ -79,6 +79,10 @@ class Connector extends DriverConnector implements DriverConnectorInterface
     {
         /** @var array<string, View> $dbViews */
         $dbViews = [];
+<<<<<<< HEAD
+=======
+        // Haal de lijst met views op via de INFORMATION_SCHEMA voor SQLServer
+>>>>>>> origin/main
         $sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS";
         $rows = DB::select($sql);
 
