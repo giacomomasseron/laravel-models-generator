@@ -72,6 +72,7 @@ class Entity
         $this->interfaces = (array) config('models-generator.interfaces', []);
         $this->traits = (array) config('models-generator.traits', []);
         $this->showTableProperty = (bool) config('models-generator.table', false);
+        $this->className = (string) implode(array_map('ucfirst', explode('.' ,$this->className)));
     }
 
     public function importLaravelModel(): bool
