@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## Unreleased
+
+### Features
+
+- Added sqlsrv connector
+
 ## v0.3.5 - 2025-04-06
 
 ### Features

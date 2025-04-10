@@ -22,6 +22,7 @@ Major features:
 - MySQL
 - SQLite
 - PostgreSQL
+- SQLServer
 
 Coming soon ... all drivers supported by doctrine/dbal.
 

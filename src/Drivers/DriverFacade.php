@@ -19,6 +19,7 @@ class DriverFacade
             'mysql' => new MySQL\Connector($connection, $schema, $table),
             'sqlite' => new SQLite\Connector($connection, $schema, $table),
             'pgsql' => new PostgreSQL\Connector($connection, $schema, $table),
+            'sqlsrv' => new SQLServer\Connector($connection, $schema, $table),
             default => throw new DatabaseDriverNotFound($driver),
         };
     }

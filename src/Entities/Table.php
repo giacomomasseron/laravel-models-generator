@@ -63,7 +63,7 @@ class Table extends Entity
         }
 
         if ($alreadyInserted === false) {
-            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName())));
+            $foreignClassName = implode(array_map('ucfirst', explode('.' , ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()))))));
             $foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
             $localColumnName = $belongsTo->foreignKey->getLocalColumns()[0];
             if (str_contains($localColumnName, $foreignColumnName) && $localColumnName != $foreignColumnName) {
