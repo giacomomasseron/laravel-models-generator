@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator;
 
+use GiacomoMasseroni\LaravelModelsGenerator\Commands\LaravelModelsGeneratorAliasCommand;
 use GiacomoMasseroni\LaravelModelsGenerator\Commands\LaravelModelsGeneratorCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -20,6 +21,7 @@ class LaravelModelsGeneratorServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-models-generator')
             ->hasConfigFile()
-            ->hasCommand(LaravelModelsGeneratorCommand::class);
+            ->hasCommand(LaravelModelsGeneratorCommand::class)
+            ->hasCommand(LaravelModelsGeneratorAliasCommand::class);
     }
 }
