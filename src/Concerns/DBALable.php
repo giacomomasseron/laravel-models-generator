@@ -91,10 +91,10 @@ trait DBALable
             $columns = $this->getEntityColumns($table->getName());
             $indexes = $this->getEntityIndexes($table->getName());
             $properties = [];
+            $rules = [];
 
             $dbTable = new Table($table->getName(), dbEntityNameToModelName($table->getName()));
             if (isset($indexes['primary'])) {
-                // $dbTable->primaryKey = $indexes['primary']->getColumns()[0];
                 $primaryKeyName = $indexes['primary']->getColumns()[0];
                 foreach ($columns as $column) {
                     if ($column->getName() == $indexes['primary']->getColumns()[0]) {
@@ -103,6 +103,16 @@ trait DBALable
                     break;
                 }
             }
+
+            foreach ($indexes as $index) {
+                if(!$index->isPrimary() && $index->isUnique()){
+                    foreach ($index->getColumns() as $columnName){
+                        $rules[$columnName][] = 'unique:'.$dbTable->name;
+                    };
+//                    dump($index);
+                }
+            }
+
             $dbTable->fillable = array_filter(
                 array_diff(
                     array_keys($columns),
@@ -136,23 +146,45 @@ trait DBALable
 
             /** @var Column $column */
             foreach ($columns as $column) {
+                // TODO: Add $rules
+
                 $laravelColumnType = $this->laravelColumnType($this->mapColumnType($column->getType()), $dbTable);
                 $dbTable->casts[$column->getName()] = $this->laravelColumnTypeForCast($this->mapColumnType($column->getType()), $dbTable);
 
+                $fieldType = match ($laravelColumnType) {
+                    'integer', 'float' => 'numeric',
+                    'boolean' => 'boolean',
+                    default => 'string',
+                };
+
+                $rules[$column->getName()][] = $column->getNotnull() ? 'required' : 'nullable';
+                $rules[$column->getName()][] = 'size:' . ($column->getLength() ?? $column->getPrecision());
+                $rules[$column->getName()][] = $fieldType;
+
+                if ($fieldType === 'numeric') {
+                    $rules[$column->getName()][] = 'max_digits:' . $column->getScale();
+                    $rules[$column->getName()][] = 'min_digits:' . ($column->getFixed() ? $column->getScale() : '0');
+                }
+
                 $properties[] = new Property(
-                    '$'.$column->getName(),
-                    ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null'),
+                    '$' . $column->getName(),
+                    ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType) . ($column->getNotnull() ? '' : '|null'),
                     comment: $column->getComment()
                 ); // $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
 
                 // Get morph
-                if (str_ends_with($column->getName(), '_type') && in_array(str_replace('_type', '', $column->getName()).'_id', array_keys($columns))) {
+                if (str_ends_with($column->getName(), '_type') && in_array(str_replace('_type', '', $column->getName()) . '_id', array_keys($columns))) {
                     $dbTable->morphTo[] = new MorphTo(str_replace('_type', '', $column->getName()));
 
                     $morphables[str_replace('_type', '', $column->getName())] = $dbTable->className;
                 }
             }
+            $dbTable->rules = $rules;
             $dbTable->properties = $properties;
+
+            if($dbTable->name == 'rental.products'){
+//                dump($dbTable, 'DBTable:');
+            }
 
             foreach ($fks as $fk) {
                 if (isRelationshipToBeAdded($dbTable->name, $fk->getForeignTableName())) {
@@ -168,12 +200,15 @@ trait DBALable
                 $foreignTableName = $belongsTo->foreignKey->getForeignTableName();
                 $foreignKeyName = $belongsTo->foreignKey->getLocalColumns()[0];
                 $localKeyName = $belongsTo->foreignKey->getForeignColumns()[0];
+
                 if ($localKeyName == $dbTables[$foreignTableName]->primaryKey) {
                     $localKeyName = null;
                 }
                 if (isRelationshipToBeAdded($dbTable->name, $foreignTableName)) {
                     $dbTables[$foreignTableName]->addHasMany(new HasMany($dbTable->className, $foreignKeyName, $localKeyName));
                 }
+
+                $dbTable->rules[$foreignKeyName][] = 'exists:'.$foreignTableName.','.$localKeyName;
 
                 if (count($dbTable->belongsTo) > 1) {
                     foreach ($dbTable->belongsTo as $subForeignName => $subBelongsTo) {
@@ -225,6 +260,10 @@ trait DBALable
                     );
                 }
             }
+
+            if($dbTable->name == 'rental.products'){
+                dump($dbTable, 'DBTable:');
+            }
         }
 
         return $dbTables;
@@ -239,31 +278,10 @@ trait DBALable
             ColumnTypeEnum::BOOLEAN => 'boolean',
             default => 'string',
         };
-
-        /*if ($type == ColumnTypeEnum::INT) {
-            return 'integer';
-        }
-        if ($type == ColumnTypeEnum::DATETIME) {
-            return 'datetime';
-        }
-        if ($type == ColumnTypeEnum::STRING) {
-            return 'string';
-        }
-        if ($type == ColumnTypeEnum::FLOAT) {
-            return 'float';
-        }
-        if ($type == ColumnTypeEnum::BOOLEAN) {
-            return 'bool';
-        }
-
-        return 'string';*/
     }
 
     public function laravelColumnType(ColumnTypeEnum $type, ?Entity $dbTable = null): string
     {
-        if ($type == ColumnTypeEnum::INT) {
-            return 'int';
-        }
         if ($type == ColumnTypeEnum::DATETIME) {
             if ($dbTable !== null) {
                 $dbTable->imports[] = 'Carbon\Carbon';
@@ -271,17 +289,12 @@ trait DBALable
 
             return 'datetime';
         }
-        if ($type == ColumnTypeEnum::STRING) {
-            return 'string';
-        }
-        if ($type == ColumnTypeEnum::FLOAT) {
-            return 'float';
-        }
-        if ($type == ColumnTypeEnum::BOOLEAN) {
-            return 'bool';
-        }
-
-        return 'string';
+        return match ($type) {
+            ColumnTypeEnum::INT => 'integer',
+            ColumnTypeEnum::FLOAT => 'float',
+            ColumnTypeEnum::BOOLEAN => 'boolean',
+            default => 'string',
+        };
     }
 
     /**

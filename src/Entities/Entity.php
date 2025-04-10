@@ -18,6 +18,9 @@ class Entity
     /** @var array<Property> */
     public array $properties = [];
 
+    /** @var array<array> */
+    public array $rules = [];
+
     /** @var array<HasMany> */
     public array $hasMany = [];
 
