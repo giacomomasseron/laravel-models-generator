@@ -257,4 +257,17 @@ return [
     */
     'exclude_relationships' => [
     ],
+
+    /*
+     * --------------------------------------------------------------------------
+     * Define rules in array or in string
+     * --------------------------------------------------------------------------
+     *
+     * This will define the format of the rules in the model.
+     * Available formats:
+     *  - 'array'
+     *  - 'string'
+     *
+     */
+    'rules_format' => 'array',
 ];

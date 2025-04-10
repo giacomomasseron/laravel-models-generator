@@ -20,6 +20,7 @@ abstract class Writer implements WriterInterface
             '{{strict}}',
             '{{namespace}}',
             '{{properties}}',
+            '{{rules}}',
             '{{abstract}}',
             '{{className}}',
             '{{imports}}',
@@ -30,6 +31,7 @@ abstract class Writer implements WriterInterface
             $this->strict(),
             $this->namespace(),
             $this->properties(),
+            $this->rules(),
             $this->abstract(),
             $this->className,
             $this->imports(),
@@ -54,6 +56,8 @@ abstract class Writer implements WriterInterface
 
     abstract public function properties(): string;
 
+    abstract public function rules(): string;
+
     abstract public function casts(): string;
 
     abstract public function relationships(): string;
@@ -74,7 +78,7 @@ abstract class Writer implements WriterInterface
 
     public function body(): string
     {
-        return $this->traits().$this->table().$this->primaryKey().$this->timestamps().$this->fillable().$this->hidden().$this->casts().$this->relationships();
+        return $this->traits().$this->table().$this->primaryKey().$this->timestamps().$this->fillable().$this->rules().$this->hidden().$this->casts().$this->relationships();
     }
 
     public function table(): string
