@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class LaravelModelsGeneratorAliasCommand extends Command
 {
-    public $signature = 'model:generate
+    public $signature = 'models:generate
                         {--s|schema= : The name of the database}
                         {--c|connection= : The name of the connection}
                         {--t|table= : The name of the table}';
