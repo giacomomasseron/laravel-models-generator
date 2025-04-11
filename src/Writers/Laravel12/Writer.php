@@ -44,7 +44,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $body .= $this->spacer.' *'."\n";
             $body .= $this->spacer.' * @var list<string>'."\n";
             $body .= $this->spacer.' */'."\n";
-            $body .= $this->spacer.'protected array $rules = ['."\n";
+            $body .= $this->spacer.'public array $rules = ['."\n";
             foreach ($this->entity->rules as $column => $rules) {
                 if (config('models-generator.rules_format', 'string') === 'array') {
                     $rules = array_map(function (string $rule) {
