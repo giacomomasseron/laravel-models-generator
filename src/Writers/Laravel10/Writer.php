@@ -19,6 +19,42 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
         }, array_unique($this->entity->imports)));
     }
 
+    public function rules(): string
+    {
+        if (count($this->entity->rules) > 0 && config('models-generator.rules')) {
+            $this->prevElementWasNotEmpty = true;
+
+            $body = "\n"."\n".$this->spacer.'/**'."\n";
+            $body .= $this->spacer.' * The validation rules that apply to the request.'."\n";
+            $body .= $this->spacer.' *'."\n";
+            $body .= $this->spacer.' * @var list<string>'."\n";
+            $body .= $this->spacer.' */'."\n";
+            $body .= $this->spacer.'protected array $rules = ['."\n";
+            foreach ($this->entity->rules as $column => $rules) {
+                if (config('models-generator.rules_format', 'string') === 'array') {
+                    $rules = array_map(function (string $rule) {
+                        return '\''.$rule.'\'';
+                    }, $rules);
+                    $rules = implode(', ', $rules);
+                    $body .= str_repeat($this->spacer, 2).'\''.$column.'\' => ['.$rules.'],'."\n";
+                } else {
+                    $rules = array_map(function (string $rule) {
+                        return str_replace(' ', '', $rule);
+                    }, $rules);
+                    $rules = '\''.implode('|', $rules).'\'';
+                    $body .= str_repeat($this->spacer, 2).'\''.$column.'\' => '.$rules.','."\n";
+                }
+            }
+            $body .= $this->spacer.'];';
+
+            return $body;
+        }
+
+        $this->prevElementWasNotEmpty = false;
+
+        return '';
+    }
+
     public function properties(): string
     {
         if (count($this->entity->properties) > 0) {

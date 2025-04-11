@@ -36,7 +36,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
 
     public function rules(): string
     {
-        if (count($this->entity->rules) > 0) {
+        if (count($this->entity->rules) > 0 && config('models-generator.rules')) {
             $this->prevElementWasNotEmpty = true;
 
             $body = "\n"."\n".$this->spacer.'/**'."\n";
@@ -44,7 +44,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             $body .= $this->spacer.' *'."\n";
             $body .= $this->spacer.' * @var list<string>'."\n";
             $body .= $this->spacer.' */'."\n";
-            $body .= $this->spacer.'protected $rules = ['."\n";
+            $body .= $this->spacer.'protected array $rules = ['."\n";
             foreach ($this->entity->rules as $column => $rules) {
                 if (config('models-generator.rules_format', 'string') === 'array') {
                     $rules = array_map(function (string $rule) {
@@ -62,7 +62,6 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
             }
             $body .= $this->spacer.'];';
 
-//            dump($body);
             return $body;
         }
 

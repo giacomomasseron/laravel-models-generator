@@ -12,6 +12,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Generate rules
+    |--------------------------------------------------------------------------
+    |
+    | Generate rules for the model
+    | Ex.
+    | $rules = [
+    |       'column_name' => 'required|integer',
+    |       'column_name2' => 'required|integer',
+    | ];
+    |
+    */
+    'rules' => false,
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Strict types
     |--------------------------------------------------------------------------
     |
@@ -259,15 +275,15 @@ return [
     ],
 
     /*
-     * --------------------------------------------------------------------------
-     * Define rules in array or in string
-     * --------------------------------------------------------------------------
-     *
-     * This will define the format of the rules in the model.
-     * Available formats:
-     *  - 'array'
-     *  - 'string'
-     *
-     */
+    | --------------------------------------------------------------------------
+    | Define rules in array or in string
+    | --------------------------------------------------------------------------
+    |
+    | This will define the format of the rules in the model.
+    | Available formats:
+    |  - 'array'
+    |  - 'string'
+    |
+    */
     'rules_format' => 'array',
 ];

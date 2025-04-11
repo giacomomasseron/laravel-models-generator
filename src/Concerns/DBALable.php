@@ -109,7 +109,6 @@ trait DBALable
                     foreach ($index->getColumns() as $columnName){
                         $rules[$columnName][] = 'unique:'.$dbTable->name;
                     };
-//                    dump($index);
                 }
             }
 
@@ -181,10 +180,6 @@ trait DBALable
             }
             $dbTable->rules = $rules;
             $dbTable->properties = $properties;
-
-            if($dbTable->name == 'rental.products'){
-//                dump($dbTable, 'DBTable:');
-            }
 
             foreach ($fks as $fk) {
                 if (isRelationshipToBeAdded($dbTable->name, $fk->getForeignTableName())) {
@@ -259,10 +254,6 @@ trait DBALable
                         $relationship,
                     );
                 }
-            }
-
-            if($dbTable->name == 'rental.products'){
-                dump($dbTable, 'DBTable:');
             }
         }
 
