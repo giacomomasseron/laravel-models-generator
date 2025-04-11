@@ -2,6 +2,17 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## Unreleased
+
+### Features
+
+- Added sqlsrv connector
+- Added "$rules" property
+- Added alias for the generation method
+- Made schema prefixes followed by a period pascal case
+- Optimized the enum check in DBALable.php
+- Optimized ModelName in Table.php
+
 ## v0.3.5 - 2025-04-06
 
 ### Features

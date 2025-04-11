@@ -30,6 +30,8 @@ interface WriterInterface
 
     public function properties(): string;
 
+    public function rules(): string;
+
     public function casts(): string;
 
     public function relationships(): string;

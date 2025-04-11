@@ -12,6 +12,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Generate rules
+    |--------------------------------------------------------------------------
+    |
+    | Generate rules for the model
+    | Ex.
+    | $rules = [
+    |       'column_name' => 'required|integer',
+    |       'column_name2' => 'required|integer',
+    | ];
+    |
+    */
+    'rules' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable generation alias
+    |--------------------------------------------------------------------------
+    |
+    | Enable generation alias command:
+    | php artisan models:generate
+    |
+    */
+    'enable_alias' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Strict types
     |--------------------------------------------------------------------------
     |
@@ -257,4 +283,17 @@ return [
     */
     'exclude_relationships' => [
     ],
+
+    /*
+    | --------------------------------------------------------------------------
+    | Define rules in array or in string
+    | --------------------------------------------------------------------------
+    |
+    | This will define the format of the rules in the model.
+    | Available formats:
+    |  - 'array'
+    |  - 'string'
+    |
+    */
+    'rules_format' => 'array',
 ];
