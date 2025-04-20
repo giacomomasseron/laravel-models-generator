@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.3.6 - 2025-04-20
+
+### Features
+
+- Added SQLServer compatibility
+
 ## v0.3.5 - 2025-04-06
 
 ### Features
