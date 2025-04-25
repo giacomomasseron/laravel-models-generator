@@ -10,9 +10,7 @@ abstract class Writer implements WriterInterface
 {
     public string $spacer = '    ';
 
-    public bool $prevElementWasNotEmpty = false;
-
-    public function __construct(public string $className, public Entity $entity, public string $stubContent, protected bool $isBase = false) {}
+    public function __construct(public string $className, public Entity $entity, public string $stubContent, public string $stubEmptyContent, protected bool $isBase = false) {}
 
     public function writeModelFile(): string
     {
@@ -37,6 +35,10 @@ abstract class Writer implements WriterInterface
             $this->body(),
         ];
 
+        if (empty($this->body())) {
+            return str_replace($search, $replace, $this->stubEmptyContent);
+        }
+
         return str_replace($search, $replace, $this->stubContent);
     }
 
@@ -48,6 +50,8 @@ abstract class Writer implements WriterInterface
 
     abstract public function fillable(): string;
 
+    abstract public function defaultValues(): string;
+
     abstract public function hidden(): string;
 
     abstract public function imports(): string;
@@ -56,9 +60,19 @@ abstract class Writer implements WriterInterface
 
     abstract public function casts(): string;
 
-    abstract public function relationships(): string;
+    // abstract public function relationships(): string;
 
     // abstract public function body(): string;
+
+    abstract protected function hasMany(): string;
+
+    abstract protected function belongTo(): string;
+
+    abstract protected function belongsToMany(): string;
+
+    abstract protected function morphTo(): string;
+
+    abstract protected function morphMany(): string;
 
     abstract public function parent(): string;
 
@@ -74,23 +88,24 @@ abstract class Writer implements WriterInterface
 
     public function body(): string
     {
-        return $this->traits().$this->table().$this->primaryKey().$this->timestamps().$this->fillable().$this->hidden().$this->casts().$this->relationships();
+        return implode("\n\n", array_filter([
+            $this->traits(),
+            $this->table(),
+            $this->primaryKey(),
+            $this->timestamps(),
+            $this->fillable(),
+            $this->defaultValues(),
+            $this->hidden(),
+            $this->casts(),
+            $this->relationships(),
+        ]));
     }
 
     public function table(): string
     {
         if ($this->entity->showTableProperty) {
-            $content = '';
-            if ($this->prevElementWasNotEmpty) {
-                $content = "\n";
-            }
-
-            $this->prevElementWasNotEmpty = true;
-
-            return $content."\n".$this->spacer.'protected $table = \''.$this->entity->name.'\';'."\n";
+            return $this->spacer.'protected $table = \''.$this->entity->name.'\';';
         }
-
-        $this->prevElementWasNotEmpty = false;
 
         return '';
     }
@@ -98,26 +113,32 @@ abstract class Writer implements WriterInterface
     public function timestamps(): string
     {
         $content = '';
-        if ($this->prevElementWasNotEmpty) {
-            $content = "\n";
-        }
-
-        $this->prevElementWasNotEmpty = true;
 
         if ($this->entity->showTimestampsProperty && $this->entity->timestamps) {
             $timestampsFields = config('models-generator.timestamps.fields', []);
             if (! empty($timestampsFields['created_at'])) {
-                $content .= "\n".$this->spacer.'public const CREATED_AT = \''.$timestampsFields['created_at'].'\';'."\n";
+                $content .= $this->spacer.'public const CREATED_AT = \''.$timestampsFields['created_at'].'\';'."\n";
             }
             if (! empty($timestampsFields['updated_at'])) {
-                $content .= "\n".$this->spacer.'public const UPDATED_AT = \''.$timestampsFields['updated_at'].'\';'."\n";
+                $content .= $this->spacer.'public const UPDATED_AT = \''.$timestampsFields['updated_at'].'\';'."\n";
             }
 
             if (! empty(config('models-generator.timestamps.format', null))) {
-                $content .= "\n".$this->spacer.'protected $dateFormat = \''.config('models-generator.timestamps.format').'\';'."\n";
+                $content .= $this->spacer.'protected $dateFormat = \''.config('models-generator.timestamps.format').'\';'."\n";
             }
         }
 
-        return $this->entity->showTimestampsProperty ? $content."\n".$this->spacer.'public $timestamps = '.($this->entity->timestamps ? 'true' : 'false').';' : '';
+        return $this->entity->showTimestampsProperty ? (! empty($content) ? $content."\n" : '').$this->spacer.'public $timestamps = '.($this->entity->timestamps ? 'true' : 'false').';' : '';
+    }
+
+    public function relationships(): string
+    {
+        return implode("\n\n", array_filter([
+            $this->hasMany(),
+            $this->belongTo(),
+            $this->belongsToMany(),
+            $this->morphTo(),
+            $this->morphMany(),
+        ]));
     }
 }

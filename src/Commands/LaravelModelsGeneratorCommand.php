@@ -68,6 +68,10 @@ class LaravelModelsGeneratorCommand extends Command
             $fileSystem->cleanDirectory($path);
         }
 
+        /**
+         * @var string $name
+         * @var Entity $dbEntity
+         */
         foreach (array_merge($dbTables, $dbViews) as $name => $dbEntity) {
             if ($this->entityToGenerate($name)) {
                 $createBaseClass = config('models-generator.base_files.enabled', false);
@@ -98,8 +102,7 @@ class LaravelModelsGeneratorCommand extends Command
     }
 
     /**
-     * /**
-     *  Resolve the fully-qualified path to the stub.
+     *  Resolve the fully qualified path to the stub.
      */
     private function resolveStubPath(): string
     {
@@ -108,12 +111,28 @@ class LaravelModelsGeneratorCommand extends Command
             : __DIR__.'/../Entities/stubs/model.stub';
     }
 
+    protected function getStubEmpty(): string
+    {
+        return $this->resolveStubEmptyPath();
+    }
+
+    /**
+     *  Resolve the fully qualified path to the stub.
+     */
+    private function resolveStubEmptyPath(): string
+    {
+        return file_exists($customPath = $this->laravel->basePath(trim('/src/Entities/stubs/model_empty.stub', '/')))
+            ? $customPath
+            : __DIR__.'/../Entities/stubs/model_empty.stub';
+    }
+
     /**
      * @throws \Exception
      */
     private function modelContent(string $className, Entity $dbEntity): string
     {
         $content = file_get_contents($this->getStub());
+        $contentEmpty = file_get_contents($this->getStubEmpty());
         if ($content !== false) {
             $arImports = [];
 
@@ -161,7 +180,7 @@ class LaravelModelsGeneratorCommand extends Command
 
             $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel'.$this->resolveLaravelVersion().'\\Writer';
             /** @var WriterInterface $writer */
-            $writer = new $versionedWriter($className, $dbEntity, $content);
+            $writer = new $versionedWriter($className, $dbEntity, $content, $contentEmpty);
 
             return $writer->writeModelFile();
         }

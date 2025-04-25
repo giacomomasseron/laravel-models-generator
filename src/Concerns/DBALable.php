@@ -142,7 +142,8 @@ trait DBALable
                 $properties[] = new Property(
                     '$'.$column->getName(),
                     ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null'),
-                    comment: $column->getComment()
+                    comment: $column->getComment(),
+                    defaultValue: $column->getDefault()
                 ); // $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
 
                 // Get morph

@@ -24,6 +24,8 @@ interface WriterInterface
 
     public function fillable(): string;
 
+    public function defaultValues(): string;
+
     public function hidden(): string;
 
     public function imports(): string;

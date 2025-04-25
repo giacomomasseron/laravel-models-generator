@@ -11,5 +11,6 @@ class Property
         public string $return,
         public bool $readOnly = false,
         public ?string $comment = null,
+        public mixed $defaultValue = null,
     ) {}
 }
