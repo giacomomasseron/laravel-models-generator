@@ -36,6 +36,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Enums\ColumnTypeEnum;
 use GiacomoMasseroni\LaravelModelsGenerator\Helpers\NamingHelper;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Str;
 
 /**
@@ -226,6 +227,14 @@ trait DBALable
                     );
                 }
             }
+
+            // Uuids
+            foreach (config('models-generator.uuids') as $table => $columns) {
+                if ($table == $dbTable->name) {
+                    $dbTable->uuids = $columns;
+                    $dbTable->traits[] = HasUuids::class;
+                }
+            }
         }
 
         return $dbTables;
@@ -240,24 +249,6 @@ trait DBALable
             ColumnTypeEnum::BOOLEAN => 'boolean',
             default => 'string',
         };
-
-        /*if ($type == ColumnTypeEnum::INT) {
-            return 'integer';
-        }
-        if ($type == ColumnTypeEnum::DATETIME) {
-            return 'datetime';
-        }
-        if ($type == ColumnTypeEnum::STRING) {
-            return 'string';
-        }
-        if ($type == ColumnTypeEnum::FLOAT) {
-            return 'float';
-        }
-        if ($type == ColumnTypeEnum::BOOLEAN) {
-            return 'bool';
-        }
-
-        return 'string';*/
     }
 
     public function laravelColumnType(ColumnTypeEnum $type, ?Entity $dbTable = null): string

@@ -52,6 +52,9 @@ class Entity
     /** @var array<string> */
     public array $traits = [];
 
+    /** @var array<string> */
+    public array $uuids = [];
+
     public bool $timestamps = false;
 
     public ?bool $showTableProperty = null;
@@ -90,6 +93,7 @@ class Entity
         $this->casts = [];
         $this->fillable = [];
         $this->traits = [];
+        $this->uuids = [];
         $this->properties = [];
         $this->interfaces = [];
         $this->primaryKey = null;

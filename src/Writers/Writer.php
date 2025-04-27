@@ -10,7 +10,13 @@ abstract class Writer implements WriterInterface
 {
     public string $spacer = '    ';
 
-    public function __construct(public string $className, public Entity $entity, public string $stubContent, public string $stubEmptyContent, protected bool $isBase = false) {}
+    public function __construct(
+        public string $className,
+        public Entity $entity,
+        public string $stubContent,
+        public string $stubEmptyContent,
+        protected bool $isBase = false
+    ) {}
 
     public function writeModelFile(): string
     {
@@ -60,6 +66,8 @@ abstract class Writer implements WriterInterface
 
     abstract public function casts(): string;
 
+    abstract public function uuids(): string;
+
     // abstract public function relationships(): string;
 
     // abstract public function body(): string;
@@ -97,6 +105,7 @@ abstract class Writer implements WriterInterface
             $this->defaultValues(),
             $this->hidden(),
             $this->casts(),
+            $this->uuids(),
             $this->relationships(),
         ]));
     }

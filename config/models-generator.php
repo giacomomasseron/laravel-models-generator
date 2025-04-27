@@ -162,7 +162,7 @@ return [
     | Relationships name case type
     |--------------------------------------------------------------------------
     |
-    | Define the way relation name are created.
+    | Define the way relation name is created.
     | Possible values: "camel_case", "snake_case"
     |
     */
@@ -213,12 +213,25 @@ return [
     | Enums
     |--------------------------------------------------------------------------
     |
-    | Enum(s) implemented by all models
+    | Enum(s) implemented by all models.
     | Ex.
     |   'column' => EnumClass::class,
     |
     */
     'enums_casting' => [
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Uuids
+    |--------------------------------------------------------------------------
+    |
+    | If you want to use UUIDs in your models, you can define them here.
+    | Ex.
+    |   'table' => ['column1', 'column2'],
+    |
+    */
+    'uuids' => [
     ],
 
     /*

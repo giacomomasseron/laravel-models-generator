@@ -19,6 +19,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasParent;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasPrimaryKey;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasProperties;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasTraits;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasUuids;
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;
 
 class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer implements WriterInterface
@@ -38,4 +39,5 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     use HasPrimaryKey;
     use HasProperties;
     use HasTraits;
+    use HasUuids;
 }
