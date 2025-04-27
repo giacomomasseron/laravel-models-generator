@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.4.1 - 2025-04-27
+
+### Features
+
+- Added the `uuids` config value to manage uuids columns
+
 ## v0.4.0 - 2025-04-25
 
 ### Features
