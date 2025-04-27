@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.4.0 - 2025-04-25
+
+### Features
+
+- Complete refactor
+- Fixed a bug that copied base class properties to child classes as well
+
 ## v0.3.6 - 2025-04-20
 
 ### Features
