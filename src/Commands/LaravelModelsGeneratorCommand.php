@@ -11,6 +11,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Exceptions\DatabaseDriverNotFound;
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Filesystem\Filesystem;
@@ -163,6 +164,10 @@ class LaravelModelsGeneratorCommand extends Command
 
             if (count($dbEntity->uuids) > 0) {
                 $arImports[] = HasUuids::class;
+            }
+
+            if (count($dbEntity->ulids) > 0) {
+                $arImports[] = HasUlids::class;
             }
 
             foreach ($dbEntity->traits as $trait) {

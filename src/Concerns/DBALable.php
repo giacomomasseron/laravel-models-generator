@@ -36,6 +36,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Enums\ColumnTypeEnum;
 use GiacomoMasseroni\LaravelModelsGenerator\Helpers\NamingHelper;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Str;
 
@@ -233,6 +234,14 @@ trait DBALable
                 if ($table == $dbTable->name) {
                     $dbTable->uuids = $columns;
                     $dbTable->traits[] = HasUuids::class;
+                }
+            }
+
+            // Ulids
+            foreach (config('models-generator.ulids') as $table) {
+                if ($table == $dbTable->name) {
+                    $dbTable->ulids[] = $dbTable->name;
+                    $dbTable->traits[] = HasUlids::class;
                 }
             }
         }

@@ -55,6 +55,9 @@ class Entity
     /** @var array<string> */
     public array $uuids = [];
 
+    /** @var array<string> */
+    public array $ulids = [];
+
     public bool $timestamps = false;
 
     public ?bool $showTableProperty = null;
