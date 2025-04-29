@@ -14,7 +14,7 @@ Major features:
 - Laravel 11 style
 - Polymorphic relationships
 - Enums casting
-- Uuids columns
+- Uuids / Ulids columns
 
 
 ## Drivers supported
@@ -262,6 +262,19 @@ return [
     |
     */
     'uuids' => [
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ulids
+    |--------------------------------------------------------------------------
+    |
+    | If you want to use Ulids in your models, you can define them here.
+    | Ex.
+    |   ['table1', 'table2'],
+    |
+    */
+    'ulids' => [
     ],
 
     /*
