@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.4.2 - 2025-04-29
+
+### Features
+
+- Added `ulids` config value to handle ulids fields
+
 ## v0.4.1 - 2025-04-27
 
 ### Features
