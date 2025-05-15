@@ -135,6 +135,7 @@ return [
     'base_files' => [
         'enabled' => false,
         'abstract' => true,
+        'generate_children_classes' => true,
     ],
 
     /*

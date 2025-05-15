@@ -70,6 +70,8 @@ class LaravelModelsGeneratorCommand extends Command
             $fileSystem->cleanDirectory($path);
         }
 
+        $createChildrenClasses = config('models-generator.base_files.generate_children_classes', true);
+
         /**
          * @var string $name
          * @var Entity $dbEntity
@@ -88,8 +90,10 @@ class LaravelModelsGeneratorCommand extends Command
                     $dbEntity->cleanForBase();
                 }
 
-                $fileName = $dbEntity->className.'.php';
-                $fileSystem->put($path.DIRECTORY_SEPARATOR.$fileName, $this->modelContent($dbEntity->className, $dbEntity));
+                if ($createChildrenClasses) {
+                    $fileName = $dbEntity->className.'.php';
+                    $fileSystem->put($path.DIRECTORY_SEPARATOR.$fileName, $this->modelContent($dbEntity->className, $dbEntity));
+                }
             }
         }
 
