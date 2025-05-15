@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.4.3 - 2025-05-15
+
+### Features
+
+- Added generate_children_classes config param, to avoid the generation of children classes when you generate base classes
+
 ## v0.4.2 - 2025-04-29
 
 ### Features
