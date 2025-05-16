@@ -59,7 +59,7 @@ return [
     | Primary Key in Fillable
     |--------------------------------------------------------------------------
     |
-    | Add primary key column field to fillable array
+    | Add primary key column field to the fillable array
     |
     */
     'primary_key_in_fillable' => true,
@@ -128,8 +128,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | If you want to generate a base file for each model, you can enable this.
-    | The base file will be created within 'Base' directory inside the models' directory.
-    | If you want your base files be abstract you can enable it.
+    | The base file will be created within the' Base 'directory inside the models' directory.
+    | If you want your base files to be abstract, you can enable it.
     |
     */
     'base_files' => [
@@ -211,6 +211,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Table Traits
+    |--------------------------------------------------------------------------
+    |
+    | Trait(s) implemented by specific models.
+    | Ex.
+    |   'table' => TraitClass::class|[TraitClass::class],
+    |
+    */
+    'table_traits' => [
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Enums
     |--------------------------------------------------------------------------
     |
@@ -271,7 +284,7 @@ return [
     |
     | These columns will not be added to $fillable array.
     |
-    | You can use a string or any valid pattern for preg_match function.
+    | You can use a string or any valid pattern for the preg_match function.
     | Ex. '/your_pattern/'
     |     '/your_pattern/i' (case-insensitive)
     |     'column_not_to_generate'
@@ -285,7 +298,7 @@ return [
     | Excluded Relationships
     |--------------------------------------------------------------------------
     |
-    | These relationships will not be added to Model class.
+    | These relationships will not be added to the Model class.
     | Ex.
     |   'table_of_starting_relationship' => [
     |       'table_of_relationship',

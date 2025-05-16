@@ -244,6 +244,19 @@ trait DBALable
                     $dbTable->traits[] = HasUlids::class;
                 }
             }
+
+            // Table traits
+            foreach (config('models-generator.table_traits') as $table => $traits) {
+                if ($table == $dbTable->name) {
+                    if (is_array($traits)) {
+                        foreach ($traits as $trait) {
+                            $dbTable->traits[] = $trait;
+                        }
+                    } else {
+                        $dbTable->traits[] = $traits;
+                    }
+                }
+            }
         }
 
         return $dbTables;
