@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.4.4 - 2025-05-16
+
+### Features
+
+- Added `table_traits` config param to use traits in specific models
+
 ## v0.4.3 - 2025-05-15
 
 ### Features
