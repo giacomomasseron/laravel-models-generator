@@ -14,6 +14,8 @@ interface WriterInterface
 
     public function traits(): string;
 
+    public function observer(): string;
+
     public function abstract(): string;
 
     public function table(): string;

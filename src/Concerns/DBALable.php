@@ -157,6 +157,42 @@ trait DBALable
             }
             $dbTable->properties = $properties;
 
+            // Uuids
+            foreach (config('models-generator.uuids') as $tbl => $columns) {
+                if ($tbl == $dbTable->name) {
+                    $dbTable->uuids = $columns;
+                    $dbTable->traits[] = HasUuids::class;
+                }
+            }
+
+            // Ulids
+            foreach (config('models-generator.ulids') as $tbl) {
+                if ($tbl == $dbTable->name) {
+                    $dbTable->ulids[] = $dbTable->name;
+                    $dbTable->traits[] = HasUlids::class;
+                }
+            }
+
+            // Table traits
+            foreach (config('models-generator.table_traits') as $tbl => $traits) {
+                if ($tbl == $dbTable->name) {
+                    if (is_array($traits)) {
+                        foreach ($traits as $trait) {
+                            $dbTable->traits[] = $trait;
+                        }
+                    } else {
+                        $dbTable->traits[] = $traits;
+                    }
+                }
+            }
+
+            // Observers
+            foreach (config('models-generator.observers') as $tbl => $observer) {
+                if ($tbl == $dbTable->name) {
+                    $dbTable->observer = $observer;
+                }
+            }
+
             foreach ($fks as $fk) {
                 if (isRelationshipToBeAdded($dbTable->name, $fk->getForeignTableName())) {
                     $dbTable->addBelongsTo(new BelongsTo($fk));
@@ -226,35 +262,6 @@ trait DBALable
                         $morphables[$relationship],
                         $relationship,
                     );
-                }
-            }
-
-            // Uuids
-            foreach (config('models-generator.uuids') as $table => $columns) {
-                if ($table == $dbTable->name) {
-                    $dbTable->uuids = $columns;
-                    $dbTable->traits[] = HasUuids::class;
-                }
-            }
-
-            // Ulids
-            foreach (config('models-generator.ulids') as $table) {
-                if ($table == $dbTable->name) {
-                    $dbTable->ulids[] = $dbTable->name;
-                    $dbTable->traits[] = HasUlids::class;
-                }
-            }
-
-            // Table traits
-            foreach (config('models-generator.table_traits') as $table => $traits) {
-                if ($table == $dbTable->name) {
-                    if (is_array($traits)) {
-                        foreach ($traits as $trait) {
-                            $dbTable->traits[] = $trait;
-                        }
-                    } else {
-                        $dbTable->traits[] = $traits;
-                    }
                 }
             }
         }

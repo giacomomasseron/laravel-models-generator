@@ -70,6 +70,8 @@ class Entity
 
     public ?PrimaryKey $primaryKey = null;
 
+    public ?string $observer = null;
+
     public function __construct(public string $name, public string $className)
     {
         /** @var array<string> $parts */
@@ -104,6 +106,7 @@ class Entity
         $this->showTimestampsProperty = false;
         $this->parent = 'Base'.$this->className;
         $this->abstract = false;
+        $this->observer = null;
         $this->namespace = (string) config('models-generator.namespace', 'App\Models');
         $this->imports = [$this->namespace.'\\Base\\'.$this->className.' as Base'.$this->className];
     }

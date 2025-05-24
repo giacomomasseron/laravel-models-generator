@@ -182,6 +182,13 @@ class LaravelModelsGeneratorCommand extends Command
                 $arImports[] = $interface;
             }
 
+            if (! is_null($dbEntity->observer)) {
+                if ($this->resolveLaravelVersion() > 9) {
+                    $arImports[] = 'Illuminate\Database\Eloquent\Attributes\ObservedBy';
+                    $arImports[] = $dbEntity->observer;
+                }
+            }
+
             if ($dbEntity->softDeletes) {
                 $arImports[] = SoftDeletes::class;
             }

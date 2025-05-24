@@ -15,6 +15,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasHidden;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasImports;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasMorphMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasMorphTo;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasObserver;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasParent;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasPrimaryKey;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasProperties;
@@ -33,6 +34,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     use HasHasMany;
     use HasHidden;
     use HasImports;
+    use HasObserver;
     use HasMorphMany;
     use HasMorphTo;
     use HasParent;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel12;
 
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel10\HasObserver;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasBelongsToMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasBelongTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasCasts;
@@ -35,6 +36,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     use HasImports;
     use HasMorphMany;
     use HasMorphTo;
+    use HasObserver;
     use HasParent;
     use HasPrimaryKey;
     use HasProperties;
