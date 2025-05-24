@@ -34,9 +34,9 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     use HasHasMany;
     use HasHidden;
     use HasImports;
-    use HasObserver;
     use HasMorphMany;
     use HasMorphTo;
+    use HasObserver;
     use HasParent;
     use HasPrimaryKey;
     use HasProperties;
