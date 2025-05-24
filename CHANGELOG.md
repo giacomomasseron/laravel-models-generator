@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v0.4.5 - 2025-05-24
+
+### Features
+
+- Added `observer` config param, to add observers to models.
+
 ## v0.4.4 - 2025-05-16
 
 ### Features
