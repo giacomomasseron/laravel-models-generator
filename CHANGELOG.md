@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.0.0 - 2025-06-04
+
+### Features
+
+- First production-ready release.
+
 ## v0.4.5 - 2025-05-24
 
 ### Features
