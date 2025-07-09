@@ -193,6 +193,13 @@ trait DBALable
                 }
             }
 
+            // Query builders
+            foreach (config('models-generator.query_builders') as $tbl => $queryBuilder) {
+                if ($tbl == $dbTable->name) {
+                    $dbTable->queryBuilder = $queryBuilder;
+                }
+            }
+
             foreach ($fks as $fk) {
                 if (isRelationshipToBeAdded($dbTable->name, $fk->getForeignTableName())) {
                     $dbTable->addBelongsTo(new BelongsTo($fk));

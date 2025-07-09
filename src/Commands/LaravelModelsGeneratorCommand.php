@@ -9,6 +9,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverFacade;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Entity;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Exceptions\DatabaseDriverNotFound;
+use GiacomoMasseroni\LaravelModelsGenerator\LaravelVersion;
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -183,9 +184,16 @@ class LaravelModelsGeneratorCommand extends Command
             }
 
             if (! is_null($dbEntity->observer)) {
-                if ($this->resolveLaravelVersion() > 9) {
+                if ($this->resolveLaravelVersion()->check(10, 44)) {
                     $arImports[] = 'Illuminate\Database\Eloquent\Attributes\ObservedBy';
                     $arImports[] = $dbEntity->observer;
+                }
+            }
+
+            if (! is_null($dbEntity->queryBuilder)) {
+                if ($this->resolveLaravelVersion()->check(12, 19)) {
+                    $arImports[] = 'Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder';
+                    $arImports[] = $dbEntity->queryBuilder;
                 }
             }
 
@@ -199,7 +207,7 @@ class LaravelModelsGeneratorCommand extends Command
                 $dbEntity->fixRelationshipsName();
             }
 
-            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel'.$this->resolveLaravelVersion().'\\Writer';
+            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel'.$this->resolveLaravelVersion()->major.'\\Writer';
             /** @var WriterInterface $writer */
             $writer = new $versionedWriter($className, $dbEntity, $content, $contentEmpty);
 
@@ -246,8 +254,16 @@ class LaravelModelsGeneratorCommand extends Command
         }*/
     }
 
-    private function resolveLaravelVersion(): int
+    private function resolveLaravelVersion(): LaravelVersion
     {
-        return (int) strstr(app()->version(), '.', true);
+        // return (int) strstr(app()->version(), '.', true);
+
+        static $version = null;
+
+        if ($version === null) {
+            $version = new LaravelVersion;
+        }
+
+        return $version;
     }
 }

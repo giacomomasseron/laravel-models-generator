@@ -10,6 +10,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasBelongTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasCasts;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasHasMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasMorphTo;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel12\HasQueryBuilder;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasAbstract;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasDefaultValues;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasFillables;
@@ -40,6 +41,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     use HasParent;
     use HasPrimaryKey;
     use HasProperties;
+    use HasQueryBuilder;
     use HasTraits;
     use HasUuids;
 }

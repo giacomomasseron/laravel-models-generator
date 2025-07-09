@@ -72,6 +72,8 @@ class Entity
 
     public ?string $observer = null;
 
+    public ?string $queryBuilder = null;
+
     public function __construct(public string $name, public string $className)
     {
         /** @var array<string> $parts */
@@ -107,6 +109,7 @@ class Entity
         $this->parent = 'Base'.$this->className;
         $this->abstract = false;
         $this->observer = null;
+        $this->queryBuilder = null;
         $this->namespace = (string) config('models-generator.namespace', 'App\Models');
         $this->imports = [$this->namespace.'\\Base\\'.$this->className.' as Base'.$this->className];
     }

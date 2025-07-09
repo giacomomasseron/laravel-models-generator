@@ -24,6 +24,7 @@ abstract class Writer implements WriterInterface
             '{{strict}}',
             '{{namespace}}',
             '{{properties}}',
+            '{{queryBuilder}}',
             '{{observer}}',
             '{{abstract}}',
             '{{className}}',
@@ -35,6 +36,7 @@ abstract class Writer implements WriterInterface
             $this->strict(),
             $this->namespace(),
             $this->properties(),
+            $this->queryBuilder(),
             $this->observer(),
             $this->abstract(),
             $this->className,
@@ -53,6 +55,8 @@ abstract class Writer implements WriterInterface
     abstract public function traits(): string;
 
     abstract public function observer(): string;
+
+    abstract public function queryBuilder(): string;
 
     abstract public function abstract(): string;
 
