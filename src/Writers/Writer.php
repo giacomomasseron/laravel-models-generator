@@ -60,6 +60,8 @@ abstract class Writer implements WriterInterface
 
     abstract public function abstract(): string;
 
+    abstract public function connection(): string;
+
     abstract public function primaryKey(): string;
 
     abstract public function fillable(): string;
@@ -107,6 +109,7 @@ abstract class Writer implements WriterInterface
         return implode("\n\n", array_filter([
             $this->traits(),
             $this->table(),
+            $this->connection(),
             $this->primaryKey(),
             $this->timestamps(),
             $this->fillable(),

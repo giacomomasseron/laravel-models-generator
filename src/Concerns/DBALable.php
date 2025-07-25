@@ -133,6 +133,8 @@ trait DBALable
                 $dbTable->hidden = ['password'];
             }
 
+            $dbTable->connection = $this->connection;
+
             $dbTable->timestamps = array_key_exists('created_at', $columns) && array_key_exists('updated_at', $columns);
             $dbTable->softDeletes = array_key_exists('deleted_at', $columns);
 

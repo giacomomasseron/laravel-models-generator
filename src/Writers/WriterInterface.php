@@ -20,6 +20,8 @@ interface WriterInterface
 
     public function table(): string;
 
+    public function connection(): string;
+
     public function primaryKey(): string;
 
     public function timestamps(): string;

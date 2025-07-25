@@ -62,6 +62,8 @@ class Entity
 
     public ?bool $showTableProperty = null;
 
+    public ?bool $showConnectionProperty = null;
+
     public bool $showTimestampsProperty = true;
 
     public bool $softDeletes = false;
@@ -69,6 +71,8 @@ class Entity
     public ?string $namespace = null;
 
     public ?PrimaryKey $primaryKey = null;
+
+    public ?string $connection = null;
 
     public ?string $observer = null;
 
@@ -82,6 +86,7 @@ class Entity
         $this->interfaces = (array) config('models-generator.interfaces', []);
         $this->traits = (array) config('models-generator.traits', []);
         $this->showTableProperty = (bool) config('models-generator.table', false);
+        $this->showConnectionProperty = (bool) config('models-generator.connection', false);
         // $this->className = (string) implode(array_map('ucfirst', explode('.' ,$this->className)));
     }
 
