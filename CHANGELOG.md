@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.1.2 - 2025-08-19
+
+### Features
+
+- Fix: remove `$` character from default values field name
+- Add `uri_casting` config value to cast columns as AsUri new class (https://github.com/laravel/framework/pull/55909)
+
 ## v1.1.1 - 2025-07-25
 
 ### Features
