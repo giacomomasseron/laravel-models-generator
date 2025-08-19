@@ -22,7 +22,7 @@ trait HasDefaultValues
             $body .= $this->spacer.'protected $attributes = ['."\n";
             foreach ($this->entity->properties as $property) {
                 if (! is_null($property->defaultValue)) {
-                    $body .= str_repeat($this->spacer, 2).'\''.$property->field.'\' => \''.$property->defaultValue.'\','."\n";
+                    $body .= str_repeat($this->spacer, 2).'\''.$property->getFieldForDefaultValue().'\' => \''.$property->defaultValue.'\','."\n";
                 }
             }
             $body .= $this->spacer.'];';

@@ -13,4 +13,9 @@ class Property
         public ?string $comment = null,
         public mixed $defaultValue = null,
     ) {}
+
+    public function getFieldForDefaultValue(): string
+    {
+        return str_replace('$', '', $this->field);
+    }
 }
