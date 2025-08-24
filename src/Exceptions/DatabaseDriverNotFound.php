@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator\Exceptions;
 
-use Exception;
 use Throwable;
 
-class DatabaseDriverNotFound extends Exception
+class DatabaseDriverNotFound extends LaravelModelsGeneratorException
 {
     public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
     {
