@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.1.3 - 2025-08-24
+
+### Features
+
+- Add `LaravelModelsGeneratorException` exception
+
 ## v1.1.2 - 2025-08-19
 
 ### Features
