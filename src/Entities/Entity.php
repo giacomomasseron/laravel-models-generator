@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator\Entities;
 
+use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DBALInterface;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\BelongsToMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\HasMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
+use GiacomoMasseroni\LaravelModelsGenerator\Factories\DBALVersionFactory;
 
 class Entity
 {
+    public DBALInterface $dbalVersion;
+
     /** @var array<string> */
     public array $imports = [];
 
@@ -80,6 +84,8 @@ class Entity
 
     public function __construct(public string $name, public string $className)
     {
+        $this->dbalVersion = DBALVersionFactory::create();
+
         /** @var array<string> $parts */
         $parts = explode('\\', (string) config('models-generator.parent', 'Model'));
         $this->parent = $parts ? end($parts) : 'Model';

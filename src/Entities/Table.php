@@ -63,14 +63,14 @@ class Table extends Entity
         }
 
         if ($alreadyInserted === false) {
-            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName())));
+            $foreignClassName = ucfirst(Str::camel(Str::singular($this->dbalVersion->getForeignTableName($belongsTo->foreignKey))));
             // $foreignClassName = implode(array_map('ucfirst', explode('.' , ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()))))));
-            $foreignColumnName = $belongsTo->foreignKey->getForeignColumns()[0];
-            $localColumnName = $belongsTo->foreignKey->getLocalColumns()[0];
+            $foreignColumnName = $this->dbalVersion->getForeignColumns($belongsTo->foreignKey)[0];
+            $localColumnName = $this->dbalVersion->getLocalColumns($belongsTo->foreignKey)[0];
             if (str_contains($localColumnName, $foreignColumnName) && $localColumnName != $foreignColumnName) {
                 $relationName = Str::camel(str_replace($foreignColumnName, '', $localColumnName));
             } else {
-                $relationName = Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()));
+                $relationName = Str::camel(Str::singular($this->dbalVersion->getForeignTableName($belongsTo->foreignKey)));
             }
             $belongsTo->name = NamingHelper::caseRelationName($relationName);
             $belongsTo->foreignClassName = $foreignClassName;

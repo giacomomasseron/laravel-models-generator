@@ -203,7 +203,7 @@ trait DBALable
             }
 
             foreach ($fks as $fk) {
-                if (isRelationshipToBeAdded($dbTable->name, $fk->getForeignTableName())) {
+                if (isRelationshipToBeAdded($dbTable->name, $dbTable->dbalVersion->getForeignTableName($fk))) {
                     $dbTable->addBelongsTo(new BelongsTo($fk));
                 }
             }
@@ -213,9 +213,9 @@ trait DBALable
 
         foreach ($dbTables as $dbTable) {
             foreach ($dbTable->belongsTo as $foreignName => $belongsTo) {
-                $foreignTableName = $belongsTo->foreignKey->getForeignTableName();
-                $foreignKeyName = $belongsTo->foreignKey->getLocalColumns()[0];
-                $localKeyName = $belongsTo->foreignKey->getForeignColumns()[0];
+                $foreignTableName = $dbTable->dbalVersion->getForeignTableName($belongsTo->foreignKey);
+                $foreignKeyName = $dbTable->dbalVersion->getLocalColumns($belongsTo->foreignKey)[0];
+                $localKeyName = $dbTable->dbalVersion->getForeignColumns($belongsTo->foreignKey)[0];
                 if ($localKeyName == $dbTables[$foreignTableName]->primaryKey) {
                     $localKeyName = null;
                 }
@@ -225,7 +225,7 @@ trait DBALable
 
                 if (count($dbTable->belongsTo) > 1) {
                     foreach ($dbTable->belongsTo as $subForeignName => $subBelongsTo) {
-                        $subForeignTableName = $subBelongsTo->foreignKey->getForeignTableName();
+                        $subForeignTableName = $dbTable->dbalVersion->getForeignTableName($subBelongsTo->foreignKey);
 
                         if ($foreignTableName != $subForeignTableName) {
                             if (isRelationshipToBeAdded($dbTable->name, $subForeignTableName)) {
