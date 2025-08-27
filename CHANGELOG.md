@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.1.4 - 2025-08-27
+
+### Features
+
+- Remove deprecated `doctrine/dbal` v4 function calls.
+
 ## v1.1.3 - 2025-08-24
 
 ### Features
