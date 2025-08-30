@@ -202,6 +202,13 @@ trait DBALable
                 }
             }
 
+            // Global scopes
+            foreach (config('models-generator.global_scopes') as $tbl => $globalScope) {
+                if ($tbl == $dbTable->name) {
+                    $dbTable->globalScopes[] = $globalScope;
+                }
+            }
+
             foreach ($fks as $fk) {
                 if (isRelationshipToBeAdded($dbTable->name, $dbTable->dbalVersion->getForeignTableName($fk))) {
                     $dbTable->addBelongsTo(new BelongsTo($fk));

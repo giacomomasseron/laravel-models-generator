@@ -197,6 +197,12 @@ class LaravelModelsGeneratorCommand extends Command
                 }
             }
 
+            if (count($dbEntity->globalScopes) > 0) {
+                if ($this->resolveLaravelVersion()->check(10)) {
+                    $arImports[] = 'Illuminate\Database\Eloquent\Attributes\ScopedBy';
+                }
+            }
+
             if ($dbEntity->softDeletes) {
                 $arImports[] = SoftDeletes::class;
             }

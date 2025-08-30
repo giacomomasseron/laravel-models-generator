@@ -25,6 +25,7 @@ abstract class Writer implements WriterInterface
             '{{namespace}}',
             '{{properties}}',
             '{{queryBuilder}}',
+            '{{globalScopes}}',
             '{{observer}}',
             '{{abstract}}',
             '{{className}}',
@@ -37,6 +38,7 @@ abstract class Writer implements WriterInterface
             $this->namespace(),
             $this->properties(),
             $this->queryBuilder(),
+            $this->globalScopes(),
             $this->observer(),
             $this->abstract(),
             $this->className,
@@ -57,6 +59,8 @@ abstract class Writer implements WriterInterface
     abstract public function observer(): string;
 
     abstract public function queryBuilder(): string;
+
+    abstract public function globalScopes(): string;
 
     abstract public function abstract(): string;
 

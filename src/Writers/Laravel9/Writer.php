@@ -11,6 +11,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasCasts;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasConnection;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasDefaultValues;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasFillables;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasGlobalScopes;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasHasMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasHidden;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel9\HasImports;
@@ -34,6 +35,7 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     use HasConnection;
     use HasDefaultValues;
     use HasFillables;
+    use HasGlobalScopes;
     use HasHasMany;
     use HasHidden;
     use HasImports;

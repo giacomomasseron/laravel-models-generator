@@ -16,6 +16,10 @@ interface WriterInterface
 
     public function observer(): string;
 
+    public function queryBuilder(): string;
+
+    public function globalScopes(): string;
+
     public function abstract(): string;
 
     public function table(): string;

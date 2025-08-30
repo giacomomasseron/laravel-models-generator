@@ -62,6 +62,9 @@ class Entity
     /** @var array<string> */
     public array $ulids = [];
 
+    /** @var array<string> */
+    public array $globalScopes = [];
+
     public bool $timestamps = false;
 
     public ?bool $showTableProperty = null;
