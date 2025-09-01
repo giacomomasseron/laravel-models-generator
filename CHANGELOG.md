@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.1.5 - 2025-09-01
+
+### Features
+
+- Fix error that deleted also `App\Models\Scopes` folder when `clean_models_directory_before_generation` config param is set to true.
+- Add `global_scopes` config param to manage models global scopes.
+
 ## v1.1.4 - 2025-08-27
 
 ### Features
