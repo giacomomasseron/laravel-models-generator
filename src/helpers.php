@@ -77,3 +77,33 @@ if (! function_exists('isRelationshipToBeAdded')) {
         return ! isset($excludeRelationships[$tableOfStartingRelationship]) || (in_array($tableOfRelationship, $excludeRelationships[$tableOfStartingRelationship]) === false);
     }
 }
+
+if (! function_exists('deleteAllInFolder')) {
+    /**
+     * @param  string  $dir  Percorso della directory da svuotare
+     * @param  string|null  $exclude  Nome della sottocartella da escludere (opzionale)
+     */
+    function deleteAllInFolder(string $dir, ?string $exclude = null): void
+    {
+        if (! is_dir($dir)) {
+            return;
+        }
+
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+            if ($exclude !== null && $item === $exclude) {
+                continue;
+            }
+            $path = $dir.DIRECTORY_SEPARATOR.$item;
+            if (is_dir($path)) {
+                deleteAllInFolder($path);
+                rmdir($path);
+            } else {
+                unlink($path);
+            }
+        }
+    }
+}

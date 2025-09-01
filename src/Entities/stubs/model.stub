@@ -7,7 +7,7 @@ namespace {{namespace}};
 /**
  * Class {{className}}{{properties}}
  */
-{{observer}}{{queryBuilder}}{{globalScopes}}{{abstract}}class {{className}} extends {{parent}}
+{{observer}}{{queryBuilder}}{{globalScopesAsAttribute}}{{abstract}}class {{className}} extends {{parent}}
 {
 {{body}}
 }

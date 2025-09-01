@@ -9,15 +9,17 @@ use GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer;
 /**
  * @mixin Writer
  */
-trait HasGlobalScopes
+trait HasGlobalScopesAsAttribute
 {
-    public function globalScopes(): string
+    public function globalScopesAsAttribute(): string
     {
         $content = '';
 
         if (count($this->entity->globalScopes) > 0) {
             $content .= '#[ScopedBy([';
-            $content .= implode(', ', $this->entity->globalScopes);
+            $content .= implode(', ', array_map(function (string $globalScope) {
+                return basename($globalScope).'::class';
+            }, $this->entity->globalScopes));
             $content .= '])]'."\n";
         }
 

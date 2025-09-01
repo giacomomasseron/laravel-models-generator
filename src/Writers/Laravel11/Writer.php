@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel11;
 
-use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel10\HasGlobalScopes;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel10\HasBooted;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel10\HasGlobalScopesAsAttribute;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel10\HasObserver;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasBelongsToMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Laravel11\HasBelongTo;
@@ -31,11 +32,12 @@ class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer imp
     use HasAbstract;
     use HasBelongsToMany;
     use HasBelongTo;
+    use HasBooted;
     use HasCasts;
     use HasConnection;
     use HasDefaultValues;
     use HasFillables;
-    use HasGlobalScopes;
+    use HasGlobalScopesAsAttribute;
     use HasHasMany;
     use HasHidden;
     use HasImports;

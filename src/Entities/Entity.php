@@ -124,6 +124,7 @@ class Entity
         $this->abstract = false;
         $this->observer = null;
         $this->queryBuilder = null;
+        $this->globalScopes = [];
         $this->namespace = (string) config('models-generator.namespace', 'App\Models');
         $this->imports = [$this->namespace.'\\Base\\'.$this->className.' as Base'.$this->className];
     }

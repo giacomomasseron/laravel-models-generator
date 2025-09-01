@@ -176,7 +176,7 @@ trait DBALable
             }
 
             // Table traits
-            foreach (config('models-generator.table_traits') as $tbl => $traits) {
+            foreach (config('models-generator.table_traits', []) as $tbl => $traits) {
                 if ($tbl == $dbTable->name) {
                     if (is_array($traits)) {
                         foreach ($traits as $trait) {
@@ -189,23 +189,23 @@ trait DBALable
             }
 
             // Observers
-            foreach (config('models-generator.observers') as $tbl => $observer) {
+            foreach (config('models-generator.observers', []) as $tbl => $observer) {
                 if ($tbl == $dbTable->name) {
                     $dbTable->observer = $observer;
                 }
             }
 
             // Query builders
-            foreach (config('models-generator.query_builders') as $tbl => $queryBuilder) {
+            foreach (config('models-generator.query_builders', []) as $tbl => $queryBuilder) {
                 if ($tbl == $dbTable->name) {
                     $dbTable->queryBuilder = $queryBuilder;
                 }
             }
 
             // Global scopes
-            foreach (config('models-generator.global_scopes') as $tbl => $globalScope) {
+            foreach (config('models-generator.global_scopes', []) as $tbl => $globalScopes) {
                 if ($tbl == $dbTable->name) {
-                    $dbTable->globalScopes[] = $globalScope;
+                    $dbTable->globalScopes = $globalScopes;
                 }
             }
 

@@ -18,7 +18,7 @@ interface WriterInterface
 
     public function queryBuilder(): string;
 
-    public function globalScopes(): string;
+    public function globalScopesAsAttribute(): string;
 
     public function abstract(): string;
 
@@ -41,6 +41,8 @@ interface WriterInterface
     public function properties(): string;
 
     public function casts(): string;
+
+    public function booted(): string;
 
     public function relationships(): string;
 }

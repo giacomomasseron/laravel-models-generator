@@ -68,7 +68,8 @@ class LaravelModelsGeneratorCommand extends Command
         $path = $this->sanitizeBaseClassesPath(config('models-generator.path', app_path('Models')));
 
         if (config('models-generator.clean_models_directory_before_generation', true)) {
-            $fileSystem->cleanDirectory($path);
+            // $fileSystem->cleanDirectory($path);
+            deleteAllInFolder($path, 'Scopes');
         }
 
         $createChildrenClasses = config('models-generator.base_files.generate_children_classes', true);
@@ -198,6 +199,10 @@ class LaravelModelsGeneratorCommand extends Command
             }
 
             if (count($dbEntity->globalScopes) > 0) {
+                foreach ($dbEntity->globalScopes as $globalScope) {
+                    $arImports[] = $globalScope;
+                }
+
                 if ($this->resolveLaravelVersion()->check(10)) {
                     $arImports[] = 'Illuminate\Database\Eloquent\Attributes\ScopedBy';
                 }

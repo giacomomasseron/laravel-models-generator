@@ -9,9 +9,9 @@ use GiacomoMasseroni\LaravelModelsGenerator\Writers\Writer;
 /**
  * @mixin Writer
  */
-trait HasGlobalScopes
+trait HasBooted
 {
-    public function globalScopes(): string
+    public function booted(): string
     {
         $content = '';
 
@@ -23,7 +23,7 @@ trait HasGlobalScopes
             $content .= $this->spacer.'{'."\n";
 
             foreach ($this->entity->globalScopes as $globalScope) {
-                $content .= str_repeat($this->spacer, 2).'static::addGlobalScope(new '.$globalScope.'());'."\n";
+                $content .= str_repeat($this->spacer, 2).'static::addGlobalScope(new '.basename($globalScope).');'."\n";
             }
 
             $content .= $this->spacer.'}';
