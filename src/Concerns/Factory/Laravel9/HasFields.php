@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GiacomoMasseroni\LaravelModelsGenerator\Concerns\Factory\Laravel9;
 
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Writer;
+use Random\RandomException;
 
 /**
  * @mixin Writer
@@ -40,6 +41,9 @@ trait HasFields
         return $body.str_repeat($this->spacer, 2);
     }
 
+    /**
+     * @throws RandomException
+     */
     private function generateLaravelFakeCode(string $columnName, string $columnType): string
     {
         if ($columnName === 'name') {
@@ -67,8 +71,8 @@ trait HasFields
         }
 
         return match ($columnType) {
-            'integer' => 'fake()->numberBetween(1, '.rand(2, 10000).')',
-            'float' => 'fake()->randomFloat(2, 1, '.rand(2, 10000).')',
+            'integer' => 'fake()->numberBetween(1, '.random_int(2, 10000).')',
+            'float' => 'fake()->randomFloat(2, 1, '.random_int(2, 10000).')',
             'boolean' => 'fake()->boolean',
             'string' => 'fake()->word',
             'datetime' => 'fake()->dateTime()',
