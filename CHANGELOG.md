@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.2.0 - 2025-09-09
+
+### Features
+
+- Add the `-f` parameter to create factories with fake values
+
 ## v1.1.5 - 2025-09-01
 
 ### Features
