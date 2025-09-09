@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9;
+
+use GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Writer;
+
+/**
+ * @mixin Writer
+ */
+trait HasBooted
+{
+    public function booted(): string
+    {
+        $content = '';
+
+        if (count($this->entity->globalScopes) > 0) {
+            $content .= $this->spacer.'/**'."\n";
+            $content .= $this->spacer.' * @return void'."\n";
+            $content .= $this->spacer.' */'."\n";
+            $content .= $this->spacer.'protected static function booted()'."\n";
+            $content .= $this->spacer.'{'."\n";
+
+            foreach ($this->entity->globalScopes as $globalScope) {
+                $content .= str_repeat($this->spacer, 2).'static::addGlobalScope(new '.basename($globalScope).');'."\n";
+            }
+
+            $content .= $this->spacer.'}';
+        }
+
+        return $content;
+    }
+}

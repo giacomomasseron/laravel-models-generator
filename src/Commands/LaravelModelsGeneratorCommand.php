@@ -8,9 +8,10 @@ use Doctrine\DBAL\Exception;
 use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverFacade;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Entity;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Trait_;
 use GiacomoMasseroni\LaravelModelsGenerator\Exceptions\DatabaseDriverNotFound;
 use GiacomoMasseroni\LaravelModelsGenerator\LaravelVersion;
-use GiacomoMasseroni\LaravelModelsGenerator\Writers\WriterInterface;
+use GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\WriterInterface;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -22,7 +23,8 @@ class LaravelModelsGeneratorCommand extends Command
     public $signature = 'laravel-models-generator:generate
                         {--s|schema= : The name of the database}
                         {--c|connection= : The name of the connection}
-                        {--t|table= : The name of the table}';
+                        {--t|table= : The name of the table}
+                        {--f|factory : Generate a factory for each model}';
 
     /**
      * The console command description.
@@ -45,6 +47,7 @@ class LaravelModelsGeneratorCommand extends Command
         $connection = $this->getConnection();
         $schema = $this->getSchema($connection);
         $this->singleEntityToCreate = $this->getTable();
+        $generateFactories = $this->option('factory');
 
         $connector = DriverFacade::instance(
             (string) config('database.connections.'.config('database.default').'.driver'),
@@ -74,6 +77,15 @@ class LaravelModelsGeneratorCommand extends Command
 
         $createChildrenClasses = config('models-generator.base_files.generate_children_classes', true);
 
+        $factoriesPath = database_path('factories');
+        if ($generateFactories) {
+            if (file_exists($path)) {
+                $generateFactories = $this->confirm('Factories folder exists, do you want to overwrite all existent factories?');
+            } else {
+                $this->createFactoriesFolder($factoriesPath);
+            }
+        }
+
         /**
          * @var string $name
          * @var Entity $dbEntity
@@ -81,6 +93,9 @@ class LaravelModelsGeneratorCommand extends Command
         foreach (array_merge($dbTables, $dbViews) as $name => $dbEntity) {
             if ($this->entityToGenerate($name)) {
                 $createBaseClass = config('models-generator.base_files.enabled', false);
+
+                $dbEntity->hasFactory = $generateFactories && ! in_array($dbEntity->name, config('models-generator.exclude_factories', []));
+
                 if ($createBaseClass) {
                     $baseClassesPath = $path.DIRECTORY_SEPARATOR.'Base';
                     $this->createBaseClassesFolder($baseClassesPath);
@@ -89,12 +104,22 @@ class LaravelModelsGeneratorCommand extends Command
                     $fileName = $dbEntity->className.'.php';
                     $fileSystem->put($baseClassesPath.DIRECTORY_SEPARATOR.$fileName, $this->modelContent($dbEntity->className, $dbEntity));
 
+                    // Create the factory
+                    if ($dbEntity->hasFactory) {
+                        $factoryFileName = $dbEntity->className.'Factory.php';
+                        $fileSystem->put($factoriesPath.DIRECTORY_SEPARATOR.$factoryFileName, $this->factoryContent($dbEntity->className, $dbEntity));
+                    }
+
                     $dbEntity->cleanForBase();
                 }
 
                 if ($createChildrenClasses) {
                     $fileName = $dbEntity->className.'.php';
                     $fileSystem->put($path.DIRECTORY_SEPARATOR.$fileName, $this->modelContent($dbEntity->className, $dbEntity));
+                } elseif ($dbEntity->hasFactory) {
+                    // TODO: check if needed
+                    $factoryFileName = $dbEntity->className.'Factory.php';
+                    $fileSystem->put($factoriesPath.DIRECTORY_SEPARATOR.$factoryFileName, $this->factoryContent($dbEntity->className, $dbEntity));
                 }
             }
         }
@@ -117,6 +142,21 @@ class LaravelModelsGeneratorCommand extends Command
         return file_exists($customPath = $this->laravel->basePath(trim('/src/Entities/stubs/model.stub', '/')))
             ? $customPath
             : __DIR__.'/../Entities/stubs/model.stub';
+    }
+
+    protected function getFactoryStub(): string
+    {
+        return $this->resolveFactoryStubPath();
+    }
+
+    /**
+     *  Resolve the fully qualified path to the stub.
+     */
+    private function resolveFactoryStubPath(): string
+    {
+        return file_exists($customPath = $this->laravel->basePath(trim('/src/Entities/stubs/Laravel9/factory.stub', '/')))
+            ? $customPath
+            : __DIR__.'/../Entities/stubs/Laravel9/factory.stub';
     }
 
     protected function getStubEmpty(): string
@@ -143,6 +183,8 @@ class LaravelModelsGeneratorCommand extends Command
         $contentEmpty = file_get_contents($this->getStubEmpty());
         if ($content !== false) {
             $arImports = [];
+            /** @var array<Trait_> $traits */
+            $traits = [];
 
             if ($dbEntity->importLaravelModel()) {
                 $arImports[] = config('models-generator.parent', 'Illuminate\Database\Eloquent\Model');
@@ -177,7 +219,7 @@ class LaravelModelsGeneratorCommand extends Command
             }
 
             foreach ($dbEntity->traits as $trait) {
-                $arImports[] = $trait;
+                $arImports[] = $trait->value;
             }
 
             foreach ($dbEntity->interfaces as $interface) {
@@ -212,17 +254,43 @@ class LaravelModelsGeneratorCommand extends Command
                 $arImports[] = SoftDeletes::class;
             }
 
+            if (count($dbEntity->traits) > 0 && $dbEntity->hasFactory) {
+                $arImports[] = 'Illuminate\Database\Eloquent\Factories\HasFactory';
+                $traits[] = new Trait_(
+                    'Illuminate\Database\Eloquent\Factories\HasFactory\HasFactory',
+                    $this->resolveLaravelVersion()->check(11) ? '/** @use HasFactory<\Database\Factories\\'.$dbEntity->className.'Factory> */' : null
+                );
+            }
+
             $dbEntity->imports = array_merge($dbEntity->imports, $arImports);
+            $dbEntity->traits = array_merge($dbEntity->traits, $traits);
 
             if ($dbEntity instanceof Table) {
                 $dbEntity->fixRelationshipsName();
             }
 
-            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Laravel'.$this->resolveLaravelVersion()->major.'\\Writer';
+            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Laravel'.$this->resolveLaravelVersion()->major.'\\Writer';
             /** @var WriterInterface $writer */
             $writer = new $versionedWriter($className, $dbEntity, $content, $contentEmpty);
 
             return $writer->writeModelFile();
+        }
+
+        throw new \Exception('Error reading stub file');
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function factoryContent(string $className, Entity $dbEntity): string
+    {
+        $content = file_get_contents($this->getFactoryStub());
+        if ($content !== false) {
+            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Factory\Laravel'.$this->resolveLaravelVersion()->major.'\\Writer';
+            /** @var \GiacomoMasseroni\LaravelModelsGenerator\Writers\Factory\WriterInterface $writer */
+            $writer = new $versionedWriter($className, $dbEntity, $content);
+
+            return $writer->writeFactoryFile();
         }
 
         throw new \Exception('Error reading stub file');
@@ -267,8 +335,6 @@ class LaravelModelsGeneratorCommand extends Command
 
     private function resolveLaravelVersion(): LaravelVersion
     {
-        // return (int) strstr(app()->version(), '.', true);
-
         static $version = null;
 
         if ($version === null) {
@@ -276,5 +342,12 @@ class LaravelModelsGeneratorCommand extends Command
         }
 
         return $version;
+    }
+
+    private function createFactoriesFolder(string $path): void
+    {
+        if (! file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
     }
 }

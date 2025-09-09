@@ -27,6 +27,21 @@ Major features:
 
 Coming soon ... all drivers supported by doctrine/dbal.
 
+## Factories
+
+The package can generate factories for your models.  
+The factories will be created in `database/factories` directory, and they use standard Laravel `fake` functions to fill fields.  
+
+You can generate model factories with the command:
+
+```php
+php artisan laravel-models-generator:generate-factories -f
+```
+or
+```php
+php artisan laravel-models-generator:generate-factories --factories
+```
+
 
 ## Installation
 
@@ -386,6 +401,21 @@ return [
     |
     */
     'exclude_columns' => [
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Excluded Factories
+    |--------------------------------------------------------------------------
+    |
+    | These factories will not be generated.
+    |
+    */
+    'exclude_factories' => [
+        'users',
+        'jobs',
+        'job_batches',
+        'failed_jobs',
     ],
 
     /*

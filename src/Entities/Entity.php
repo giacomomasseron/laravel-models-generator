@@ -43,17 +43,19 @@ class Entity
     /** @var array<string> */
     public array $fillable = [];
 
-    /** @var array<string> */
+    /** @var array<string, string> */
     public array $casts = [];
 
     public bool $abstract = false;
+
+    public bool $hasFactory = false;
 
     public ?string $parent = null;
 
     /** @var array<string> */
     public array $interfaces = [];
 
-    /** @var array<string> */
+    /** @var array<Trait_> */
     public array $traits = [];
 
     /** @var array<string> */
@@ -93,7 +95,9 @@ class Entity
         $parts = explode('\\', (string) config('models-generator.parent', 'Model'));
         $this->parent = $parts ? end($parts) : 'Model';
         $this->interfaces = (array) config('models-generator.interfaces', []);
-        $this->traits = (array) config('models-generator.traits', []);
+        $this->traits = array_map(function (string $trait) {
+            return new Trait_($trait);
+        }, (array) config('models-generator.traits', []));
         $this->showTableProperty = (bool) config('models-generator.table', false);
         $this->showConnectionProperty = (bool) config('models-generator.connection', false);
         // $this->className = (string) implode(array_map('ucfirst', explode('.' ,$this->className)));

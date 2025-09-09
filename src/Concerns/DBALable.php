@@ -34,6 +34,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\HasMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
+use GiacomoMasseroni\LaravelModelsGenerator\Entities\Trait_;
 use GiacomoMasseroni\LaravelModelsGenerator\Enums\ColumnTypeEnum;
 use GiacomoMasseroni\LaravelModelsGenerator\Helpers\NamingHelper;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -77,7 +78,7 @@ trait DBALable
     /**
      * @param  list<\Doctrine\DBAL\Schema\Table>  $tables
      *
-     * @return array<string, Table>
+     * @return Table[]
      *
      * @throws Exception
      */
@@ -163,7 +164,7 @@ trait DBALable
             foreach (config('models-generator.uuids') as $tbl => $columns) {
                 if ($tbl == $dbTable->name) {
                     $dbTable->uuids = $columns;
-                    $dbTable->traits[] = HasUuids::class;
+                    $dbTable->traits[] = new Trait_(HasUuids::class);
                 }
             }
 
@@ -171,7 +172,7 @@ trait DBALable
             foreach (config('models-generator.ulids') as $tbl) {
                 if ($tbl == $dbTable->name) {
                     $dbTable->ulids[] = $dbTable->name;
-                    $dbTable->traits[] = HasUlids::class;
+                    $dbTable->traits[] = new Trait_(HasUlids::class);
                 }
             }
 
@@ -180,10 +181,10 @@ trait DBALable
                 if ($tbl == $dbTable->name) {
                     if (is_array($traits)) {
                         foreach ($traits as $trait) {
-                            $dbTable->traits[] = $trait;
+                            $dbTable->traits[] = new Trait_($trait);
                         }
                     } else {
-                        $dbTable->traits[] = $traits;
+                        $dbTable->traits[] = new Trait_($traits);
                     }
                 }
             }
