@@ -30,18 +30,37 @@ Coming soon ... all drivers supported by doctrine/dbal.
 ## Factories
 
 The package can generate factories for your models.  
-The factories will be created in `database/factories` directory, and they use standard Laravel `fake` functions to fill fields.  
+The factories will be created in `database/factories` directory, and they use standard Laravel `fake` functions to fill fields.
 
 You can generate model factories with the command:
 
-```php
-php artisan laravel-models-generator:generate-factories -f
+```shell
+php artisan laravel-models-generator:generate -f
 ```
 or
-```php
-php artisan laravel-models-generator:generate-factories --factories
+```shell
+php artisan laravel-models-generator:generate --factories
 ```
 
+## Other usages
+
+To generate models from a specific connection:
+
+```shell
+php artisan laravel-models-generator:generate -c=connection
+```
+
+To generate models from a specific schema:
+
+```shell
+php artisan laravel-models-generator:generate -s=schema
+```
+
+To generate a single table:
+
+```shell
+php artisan laravel-models-generator:generate -t=users
+```
 
 ## Installation
 
