@@ -71,7 +71,7 @@ composer require giacomomasseron/laravel-models-generator
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="laravel-models-generator-config"
+php artisan vendor:publish --tag="models-generator-config"
 ```
 
 This is the contents of the published config file:
