@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.2.1 - 2025-09-15
+
+### Features
+
+- Pest 4.0
+
 ## v1.2.0 - 2025-09-09
 
 ### Features
