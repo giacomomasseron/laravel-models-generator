@@ -40,7 +40,7 @@ class Table extends Entity
                 }
                 $relationName = Str::camel(str_replace("{$this->name}_", '', $belongsToMany->pivot).'_'.Str::plural($related));
             }
-            $foreignClassName = ucfirst(Str::camel(Str::singular($belongsToMany->related)));
+            $foreignClassName = ucfirst(Str::camel(Str::singular(str_replace(config('models-generator.table_prefix', ''), '', $belongsToMany->related))));
             $belongsToMany->name = NamingHelper::caseRelationName($relationName);
             $belongsToMany->foreignClassName = $foreignClassName;
 
@@ -63,7 +63,7 @@ class Table extends Entity
         }
 
         if ($alreadyInserted === false) {
-            $foreignClassName = ucfirst(Str::camel(Str::singular($this->dbalVersion->getForeignTableName($belongsTo->foreignKey))));
+            $foreignClassName = ucfirst(Str::camel(Str::singular(str_replace(config('models-generator.table_prefix', ''), '', $this->dbalVersion->getForeignTableName($belongsTo->foreignKey)))));
             // $foreignClassName = implode(array_map('ucfirst', explode('.' , ucfirst(Str::camel(Str::singular($belongsTo->foreignKey->getForeignTableName()))))));
             $foreignColumnName = $this->dbalVersion->getForeignColumns($belongsTo->foreignKey)[0];
             $localColumnName = $this->dbalVersion->getLocalColumns($belongsTo->foreignKey)[0];
