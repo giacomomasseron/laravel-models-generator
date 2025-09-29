@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.2.2 - 2025-09-29
+
+### Features
+
+- Fix: remove prefix on model name in relationships
+
 ## v1.2.1 - 2025-09-15
 
 ### Features
