@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GiacomoMasseroni\LaravelModelsGenerator\Concerns\Factory\Laravel9;
 
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Writer;
+use Illuminate\Support\Str;
 use Random\RandomException;
 
 /**
@@ -46,37 +47,23 @@ trait HasFields
      */
     private function generateLaravelFakeCode(string $columnName, string $columnType): string
     {
-        if ($columnName === 'name') {
-            return 'fake()->name';
+        $sanitizedColumnName = ucfirst(Str::camel($columnName));
+        $sanitizedColumnType = ucfirst(Str::camel($columnType));
+
+        $classesPrefix = '\\GiacomoMasseroni\\LaravelModelsGenerator\\Generators\\Laravel9\\';
+
+        $fullFakeClassName = $classesPrefix.'Fake'.$sanitizedColumnName;
+
+        if (class_exists($fullFakeClassName)) {
+            return (new $fullFakeClassName)->__toString(); /** @phpstan-ignore-line  */
         }
 
-        if ($columnName === 'email') {
-            return 'fake()->unique()->safeEmail()';
+        $fullFakeClassName = $classesPrefix.'Fake'.$sanitizedColumnType;
+
+        if (class_exists($fullFakeClassName)) {
+            return (new $fullFakeClassName)->__toString(); /** @phpstan-ignore-line  */
         }
 
-        if ($columnName === 'address') {
-            return 'fake()->address';
-        }
-
-        if ($columnName === 'title') {
-            return 'fake()->title';
-        }
-
-        if ($columnName === 'password') {
-            return '\Illuminate\Support\Str::password(24)';
-        }
-
-        if ($columnName === 'created_at' || $columnName === 'updated_at' || $columnName === 'deleted_at') {
-            return 'now()';
-        }
-
-        return match ($columnType) {
-            'integer' => 'fake()->numberBetween(1, '.random_int(2, 10000).')',
-            'float' => 'fake()->randomFloat(2, 1, '.random_int(2, 10000).')',
-            'boolean' => 'fake()->boolean',
-            'string' => 'fake()->word',
-            'datetime' => 'fake()->dateTime()',
-            default => '',
-        };
+        return '';
     }
 }
