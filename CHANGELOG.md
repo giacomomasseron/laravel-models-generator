@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.2.3 - 2025-11-29
+
+### Features
+
+- Factories creation refactor
+
 ## v1.2.2 - 2025-09-29
 
 ### Features
