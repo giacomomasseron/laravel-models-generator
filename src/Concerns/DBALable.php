@@ -94,6 +94,7 @@ trait DBALable
             $columns = $this->getEntityColumns($table->getName());
             $indexes = $this->getEntityIndexes($table->getName());
             $properties = [];
+            $jsonCasting = config('models-generator.json_casting', [])[$table->getName()] ?? [];
 
             $dbTable = new Table($table->getName(), dbEntityNameToModelName($table->getName()));
             if (isset($indexes['primary'])) {
@@ -114,7 +115,7 @@ trait DBALable
                         $this->getArrayWithPrimaryKey($dbTable)
                     )
                 ),
-                static function (string $column): bool {
+                static function (string $column) use ($jsonCasting): bool {
                     foreach (config('models-generator.exclude_columns', []) as $pattern) {
                         if (@preg_match($pattern, '') === false) {
                             $found = $pattern === $column;
@@ -123,6 +124,13 @@ trait DBALable
                         }
 
                         if ($found) {
+                            return false;
+                        }
+                    }
+
+                    // We add json fillable in HasFillables trait
+                    foreach ($jsonCasting as $jsonColumn => $jsonKeys) {
+                        if ($jsonColumn === $column) {
                             return false;
                         }
                     }

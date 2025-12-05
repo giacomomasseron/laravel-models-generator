@@ -17,6 +17,7 @@ trait HasCasts
 
         if (count($this->entity->casts) > 0) {
             $uriCasting = config('models-generator.uri_casting', [])[$this->entity->name] ?? [];
+            $jsonCasting = config('models-generator.json_casting', [])[$this->entity->name] ?? [];
 
             $body .= $this->spacer.'/**'."\n";
             $body .= $this->spacer.' * @return array<string, string>'."\n";
@@ -29,6 +30,8 @@ trait HasCasts
                     $type = '\\'.config('models-generator.enums_casting', [])[$column].'::class';
                 } elseif (in_array($column, $uriCasting)) {
                     $type = '\\'.'Illuminate\Database\Eloquent\Casts\AsUri::class';
+                } elseif (array_key_exists($column, $jsonCasting)) {
+                    $type = '\'array\'';
                 } else {
                     $type = '\''.$type.'\'';
                 }

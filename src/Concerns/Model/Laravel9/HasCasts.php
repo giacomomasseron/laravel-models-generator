@@ -16,6 +16,8 @@ trait HasCasts
         $body = '';
 
         if (count($this->entity->casts) > 0) {
+            $jsonCasting = config('models-generator.json_casting', [])[$this->entity->name] ?? [];
+
             $body .= $this->spacer.'/**'."\n";
             $body .= $this->spacer.' * @var array<string, string>'."\n";
             $body .= $this->spacer.' */'."\n";
@@ -23,6 +25,8 @@ trait HasCasts
             foreach ($this->entity->casts as $column => $type) {
                 if (array_key_exists($column, (array) config('models-generator.enums_casting', []))) {
                     $type = '\\'.config('models-generator.enums_casting', [])[$column].'::class';
+                } elseif (array_key_exists($column, $jsonCasting)) {
+                    $type = '\'array\'';
                 } else {
                     $type = '\''.$type.'\'';
                 }

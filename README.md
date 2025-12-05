@@ -11,8 +11,10 @@ Major features:
 - PHPStan level 9/10 compliant
 - Laravel 11 style
 - Polymorphic relationships
-- Enums casting
 - Uuids / Ulids columns
+- Enums casting
+- URI casting
+- JSON casting
 
 
 ## Drivers supported
@@ -315,6 +317,26 @@ return [
     |
     */
     'uri_casting' => [
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | JSON casting
+    |--------------------------------------------------------------------------
+    |
+    | Columns that has to be cast as JSON.
+    | Ex.
+    |   'table1' => [
+    |       'json_column1' => ['json_key1', 'json_key2'],
+    |       'json_column2' => ['json_keyA', 'json_keyB'],
+    |   ],
+    |   'table2' => [
+    |       'json_column3' => ['json_keyX', 'json_keyY'],
+    |       'json_column4' => ['json_keyM', 'json_keyN'],
+    |   ],
+    |
+    */
+    'json_casting' => [
     ],
 
     /*
