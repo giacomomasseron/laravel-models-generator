@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.3.0 - 2025-12-05
+
+### Features
+
+- Add management of JSON columns
+
 ## v1.2.3 - 2025-11-29
 
 ### Features
