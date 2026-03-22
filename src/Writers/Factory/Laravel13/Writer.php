@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Factory\Laravel13;
 
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Factory\Laravel9\HasFields;
