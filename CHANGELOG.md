@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v1.3.2 - 2026-03-22
+
+### Features
+
+- Fix Laravel 13 generation
+
 ## v1.3.1 - 2026-03-21
 
 ### Features
