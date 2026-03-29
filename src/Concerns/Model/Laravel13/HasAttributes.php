@@ -22,9 +22,9 @@ trait HasAttributes
 
         if ($this->entity->showTimestampsProperty) {
             if ($this->entity->timestamps) {
-                $table[] = $this->spacer . 'timestamps: true,';
+                $table[] = $this->spacer.'timestamps: true,';
             } else {
-                $table[] = $this->spacer . 'timestamps: false,';
+                $table[] = $this->spacer.'timestamps: false,';
             }
         }
 
