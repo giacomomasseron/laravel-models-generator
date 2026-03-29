@@ -10,7 +10,6 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Entity;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Trait_;
 use GiacomoMasseroni\LaravelModelsGenerator\Exceptions\DatabaseDriverNotFound;
-use GiacomoMasseroni\LaravelModelsGenerator\LaravelVersion;
 use GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\WriterInterface;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -227,14 +226,14 @@ class LaravelModelsGeneratorCommand extends Command
             }
 
             if (! is_null($dbEntity->observer)) {
-                if ($this->resolveLaravelVersion()->check(10, 44)) {
+                if (resolveLaravelVersion()->check(10, 44)) {
                     $arImports[] = 'Illuminate\Database\Eloquent\Attributes\ObservedBy';
                     $arImports[] = $dbEntity->observer;
                 }
             }
 
             if (! is_null($dbEntity->queryBuilder)) {
-                if ($this->resolveLaravelVersion()->check(12, 19)) {
+                if (resolveLaravelVersion()->check(12, 19)) {
                     $arImports[] = 'Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder';
                     $arImports[] = $dbEntity->queryBuilder;
                 }
@@ -245,7 +244,7 @@ class LaravelModelsGeneratorCommand extends Command
                     $arImports[] = $globalScope;
                 }
 
-                if ($this->resolveLaravelVersion()->check(10)) {
+                if (resolveLaravelVersion()->check(10)) {
                     $arImports[] = 'Illuminate\Database\Eloquent\Attributes\ScopedBy';
                 }
             }
@@ -258,7 +257,7 @@ class LaravelModelsGeneratorCommand extends Command
                 $arImports[] = 'Illuminate\Database\Eloquent\Factories\HasFactory';
                 $traits[] = new Trait_(
                     'Illuminate\Database\Eloquent\Factories\HasFactory\HasFactory',
-                    $this->resolveLaravelVersion()->check(11) ? '/** @use HasFactory<\Database\Factories\\'.$dbEntity->className.'Factory> */' : null
+                    resolveLaravelVersion()->check(11) ? '/** @use HasFactory<\Database\Factories\\'.$dbEntity->className.'Factory> */' : null
                 );
             }
 
@@ -269,7 +268,7 @@ class LaravelModelsGeneratorCommand extends Command
                 $dbEntity->fixRelationshipsName();
             }
 
-            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Laravel'.$this->resolveLaravelVersion()->major.'\\Writer';
+            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Laravel'.resolveLaravelVersion()->major.'\\Writer';
             /** @var WriterInterface $writer */
             $writer = new $versionedWriter($className, $dbEntity, $content, $contentEmpty);
 
@@ -286,7 +285,7 @@ class LaravelModelsGeneratorCommand extends Command
     {
         $content = file_get_contents($this->getFactoryStub());
         if ($content !== false) {
-            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Factory\Laravel'.$this->resolveLaravelVersion()->major.'\\Writer';
+            $versionedWriter = 'GiacomoMasseroni\LaravelModelsGenerator\Writers\Factory\Laravel'.resolveLaravelVersion()->major.'\\Writer';
             /** @var \GiacomoMasseroni\LaravelModelsGenerator\Writers\Factory\WriterInterface $writer */
             $writer = new $versionedWriter($className, $dbEntity, $content);
 
@@ -331,17 +330,6 @@ class LaravelModelsGeneratorCommand extends Command
         /*if (! file_exists(base_path($path))) {
             mkdir(base_path($path), 0755, true);
         }*/
-    }
-
-    private function resolveLaravelVersion(): LaravelVersion
-    {
-        static $version = null;
-
-        if ($version === null) {
-            $version = new LaravelVersion;
-        }
-
-        return $version;
     }
 
     private function createFactoriesFolder(string $path): void

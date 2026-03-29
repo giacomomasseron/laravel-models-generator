@@ -224,6 +224,22 @@ trait DBALable
                 }
             }
 
+            if (resolveLaravelVersion()->check(13)) {
+                $dbTable->imports[] = 'Illuminate\Database\Eloquent\Attributes\Table';
+
+                if (count($dbTable->fillable) > 0) {
+                    $dbTable->imports[] = 'Illuminate\Database\Eloquent\Attributes\Fillable';
+                }
+
+                if (count($dbTable->hidden) > 0) {
+                    $dbTable->imports[] = 'Illuminate\Database\Eloquent\Attributes\Hidden';
+                }
+
+                if ($dbTable->showConnectionProperty && ! empty($dbTable->connection)) {
+                    $dbTable->imports[] = 'Illuminate\Database\Eloquent\Attributes\Connection';
+                }
+            }
+
             $dbTables[$table->getName()] = $dbTable;
         }
 

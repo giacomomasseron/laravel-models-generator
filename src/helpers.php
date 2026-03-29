@@ -19,6 +19,7 @@ use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Type;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Entity;
+use GiacomoMasseroni\LaravelModelsGenerator\LaravelVersion;
 use Illuminate\Support\Str;
 
 if (! function_exists('dbEntityNameToModelName')) {
@@ -105,5 +106,18 @@ if (! function_exists('deleteAllInFolder')) {
                 unlink($path);
             }
         }
+    }
+}
+
+if (! function_exists('resolveLaravelVersion')) {
+    function resolveLaravelVersion(): LaravelVersion
+    {
+        static $version = null;
+
+        if ($version === null) {
+            $version = new LaravelVersion;
+        }
+
+        return $version;
     }
 }

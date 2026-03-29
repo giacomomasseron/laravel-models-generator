@@ -14,6 +14,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel11\HasMorphTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel12\HasCasts;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel12\HasQueryBuilder;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasAbstract;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasAttributes;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasConnection;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasDefaultValues;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasFillables;
@@ -30,6 +31,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\WriterInterface;
 class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Writer implements WriterInterface
 {
     use HasAbstract;
+    use HasAttributes;
     use HasBelongsToMany;
     use HasBelongTo;
     use HasBooted;

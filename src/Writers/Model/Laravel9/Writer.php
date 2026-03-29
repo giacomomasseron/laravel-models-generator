@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Laravel9;
 
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasAbstract;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasAttributes;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasBelongsToMany;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasBelongTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasBooted;
@@ -30,6 +31,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\WriterInterface;
 class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Writer implements WriterInterface
 {
     use HasAbstract;
+    use HasAttributes;
     use HasBelongsToMany;
     use HasBelongTo;
     use HasBooted;

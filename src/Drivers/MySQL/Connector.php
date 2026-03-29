@@ -67,6 +67,22 @@ class Connector extends DriverConnector implements DriverConnectorInterface
         }
         $dbView->properties = $properties;
 
+        if (resolveLaravelVersion()->check(13)) {
+            $dbView->imports[] = 'Illuminate\Database\Eloquent\Attributes\Table';
+
+            if (count($dbView->fillable) > 0) {
+                $dbView->imports[] = 'Illuminate\Database\Eloquent\Attributes\Fillable';
+            }
+
+            if (count($dbView->hidden) > 0) {
+                $dbView->imports[] = 'Illuminate\Database\Eloquent\Attributes\Hidden';
+            }
+
+            if ($dbView->showConnectionProperty && ! empty($dbView->connection)) {
+                $dbView->imports[] = 'Illuminate\Database\Eloquent\Attributes\Connection';
+            }
+        }
+
         return $dbView;
     }
 

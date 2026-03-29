@@ -20,6 +20,8 @@ interface WriterInterface
 
     public function globalScopesAsAttribute(): string;
 
+    public function attributes(): string;
+
     public function abstract(): string;
 
     public function table(): string;
