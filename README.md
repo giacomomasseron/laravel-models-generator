@@ -27,6 +27,22 @@ Major features:
 
 Coming soon ... all drivers supported by doctrine/dbal.
 
+## Installation
+
+You can install the package via composer:
+
+```bash
+composer require giacomomasseron/laravel-models-generator
+```
+
+## Usage / Generate models
+
+For basic usage, you can generate models with the command:
+
+```bash
+php artisan laravel-models-generator:generate
+```
+
 ## Factories
 
 The package can generate factories for your models.  
@@ -62,13 +78,7 @@ To generate a single table:
 php artisan laravel-models-generator:generate -t=users
 ```
 
-## Installation
-
-You can install the package via composer:
-
-```bash
-composer require giacomomasseron/laravel-models-generator
-```
+## Config
 
 You can publish the config file with:
 
@@ -472,12 +482,6 @@ return [
     'exclude_relationships' => [
     ],
 ];
-```
-
-## Usage
-
-```bash
-php artisan laravel-models-generator:generate
 ```
 
 ## Polymorphic relationships
