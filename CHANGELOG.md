@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v3.0.0 - 2026-06-23
+
+### Features
+
+- Remove DBAL deprecated functions and optimize the code
+
 ## v2.0.0 - 2026-03-29
 
 ### Features
