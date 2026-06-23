@@ -7,6 +7,8 @@ namespace GiacomoMasseroni\LaravelModelsGenerator\Drivers\MySQL;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use GiacomoMasseroni\LaravelModelsGenerator\Concerns\DBALable;
 use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DriverConnectorInterface;
 use GiacomoMasseroni\LaravelModelsGenerator\Drivers\DriverConnector;
@@ -43,9 +45,48 @@ class Connector extends DriverConnector implements DriverConnectorInterface
         ];
     }
 
+    /**
+     * Introspects the columns of a view.
+     *
+     * DBAL 4.4's schema introspection filters on TABLE_TYPE = 'BASE TABLE', so it never returns
+     * columns for views. They are therefore read here directly from information_schema.
+     *
+     * @return array<string, Column>
+     *
+     * @throws Exception
+     */
+    private function getViewColumns(string $viewName): array
+    {
+        $platform = $this->conn->getDatabasePlatform();
+
+        $rows = $this->conn->executeQuery(
+            'SELECT COLUMN_NAME AS name, DATA_TYPE AS type, IS_NULLABLE AS nullable '.
+            'FROM information_schema.COLUMNS '.
+            'WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? '.
+            'ORDER BY ORDINAL_POSITION',
+            [$this->schema, $viewName]
+        )->fetchAllAssociative();
+
+        $columns = [];
+        foreach ($rows as $row) {
+            $name = (string) $row['name'];
+            $dbType = strtolower((string) $row['type']);
+
+            $doctrineType = $platform->hasDoctrineTypeMappingFor($dbType)
+                ? $platform->getDoctrineTypeMapping($dbType)
+                : Types::STRING;
+
+            $columns[strtolower($name)] = new Column($name, Type::getType($doctrineType), [
+                'notnull' => $row['nullable'] === 'NO',
+            ]);
+        }
+
+        return $columns;
+    }
+
     private function getView(string $viewName): View
     {
-        $columns = $this->getEntityColumns($viewName);
+        $columns = $this->getViewColumns($viewName);
         $properties = [];
 
         $dbView = new View($viewName, dbEntityNameToModelName($viewName));
