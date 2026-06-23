@@ -24,6 +24,7 @@ use Doctrine\DBAL\Types\SmallIntType;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Type;
+use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DBALInterface;
 use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DriverConnectorInterface;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Entity;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\PrimaryKey;
@@ -36,6 +37,7 @@ use GiacomoMasseroni\LaravelModelsGenerator\Entities\Relationships\MorphTo;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Table;
 use GiacomoMasseroni\LaravelModelsGenerator\Entities\Trait_;
 use GiacomoMasseroni\LaravelModelsGenerator\Enums\ColumnTypeEnum;
+use GiacomoMasseroni\LaravelModelsGenerator\Factories\DBALVersionFactory;
 use GiacomoMasseroni\LaravelModelsGenerator\Helpers\NamingHelper;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -50,6 +52,8 @@ trait DBALable
 
     private Connection $conn;
 
+    private ?DBALInterface $dbal = null;
+
     /**
      * @var array<string, mixed>
      */
@@ -61,18 +65,42 @@ trait DBALable
     private static array $entityIndexes = [];
 
     /**
+     * @var array<string, list<string>>
+     */
+    private static array $entityPrimaryKeyColumns = [];
+
+    /**
      * @var array<string, string>
      */
     private array $typeColumnPropertyMaps = [
         'datetime' => 'Carbon',
     ];
 
+    private function dbal(): DBALInterface
+    {
+        return $this->dbal ??= DBALVersionFactory::create();
+    }
+
+    /**
+     * @return list<string>
+     *
+     * @throws Exception
+     */
+    private function primaryKeyColumns(string $entityName): array
+    {
+        if (! isset(self::$entityPrimaryKeyColumns[$entityName])) {
+            self::$entityPrimaryKeyColumns[$entityName] = $this->dbal()->getPrimaryKeyColumns($this->sm, $entityName);
+        }
+
+        return self::$entityPrimaryKeyColumns[$entityName];
+    }
+
     /**
      * @throws Exception
      */
     public function listTables(): array
     {
-        return $this->getTables($this->sm->listTables());
+        return $this->getTables($this->dbal()->listTables($this->sm));
     }
 
     /**
@@ -90,18 +118,18 @@ trait DBALable
         $morphables = [];
 
         foreach ($tables as $table) {
+            $tableName = $this->dbal()->getTableName($table);
             $fks = $table->getForeignKeys();
-            $columns = $this->getEntityColumns($table->getName());
-            $indexes = $this->getEntityIndexes($table->getName());
+            $columns = $this->getEntityColumns($tableName);
+            $primaryKeyColumns = $this->primaryKeyColumns($tableName);
             $properties = [];
-            $jsonCasting = config('models-generator.json_casting', [])[$table->getName()] ?? [];
+            $jsonCasting = config('models-generator.json_casting', [])[$tableName] ?? [];
 
-            $dbTable = new Table($table->getName(), dbEntityNameToModelName($table->getName()));
-            if (isset($indexes['primary'])) {
-                // $dbTable->primaryKey = $indexes['primary']->getColumns()[0];
-                $primaryKeyName = $indexes['primary']->getColumns()[0];
+            $dbTable = new Table($tableName, dbEntityNameToModelName($tableName));
+            if ($primaryKeyColumns !== []) {
+                $primaryKeyName = $primaryKeyColumns[0];
                 foreach ($columns as $column) {
-                    if ($column->getName() == $indexes['primary']->getColumns()[0]) {
+                    if ($column->getName() == $primaryKeyName) {
                         $dbTable->primaryKey = new PrimaryKey($primaryKeyName, $column->getAutoincrement(), $this->laravelColumnType($this->mapColumnType($column->getType())));
                     }
                     break;
@@ -149,21 +177,22 @@ trait DBALable
 
             /** @var Column $column */
             foreach ($columns as $column) {
+                $columnName = $this->dbal()->getColumnName($column);
                 $laravelColumnType = $this->laravelColumnType($this->mapColumnType($column->getType()), $dbTable);
-                $dbTable->casts[$column->getName()] = $this->laravelColumnTypeForCast($this->mapColumnType($column->getType()), $dbTable);
+                $dbTable->casts[$columnName] = $this->laravelColumnTypeForCast($this->mapColumnType($column->getType()), $dbTable);
 
                 $properties[] = new Property(
-                    '$'.$column->getName(),
+                    '$'.$columnName,
                     ($this->typeColumnPropertyMaps[$laravelColumnType] ?? $laravelColumnType).($column->getNotnull() ? '' : '|null'),
                     comment: $column->getComment(),
                     defaultValue: $column->getDefault()
-                ); // $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$column->getName();
+                ); // $laravelColumnType.($column->getNotnull() ? '' : '|null').' $'.$columnName;
 
                 // Get morph
-                if (str_ends_with($column->getName(), '_type') && in_array(str_replace('_type', '', $column->getName()).'_id', array_keys($columns))) {
-                    $dbTable->morphTo[] = new MorphTo(str_replace('_type', '', $column->getName()));
+                if (str_ends_with($columnName, '_type') && in_array(str_replace('_type', '', $columnName).'_id', array_keys($columns))) {
+                    $dbTable->morphTo[] = new MorphTo(str_replace('_type', '', $columnName));
 
-                    $morphables[str_replace('_type', '', $column->getName())] = $dbTable->className;
+                    $morphables[str_replace('_type', '', $columnName)] = $dbTable->className;
                 }
             }
             $dbTable->properties = $properties;
@@ -240,7 +269,7 @@ trait DBALable
                 }
             }
 
-            $dbTables[$table->getName()] = $dbTable;
+            $dbTables[$tableName] = $dbTable;
         }
 
         foreach ($dbTables as $dbTable) {
@@ -261,13 +290,17 @@ trait DBALable
 
                         if ($foreignTableName != $subForeignTableName) {
                             if (isRelationshipToBeAdded($dbTable->name, $subForeignTableName)) {
-                                $tableIndexes = $this->getEntityIndexes($dbTables[$foreignTableName]->name);
-                                $relatedTableIndexes = $this->getEntityIndexes($subForeignTableName);
-                                $pivotIndexes = $this->getEntityIndexes($dbTable->name);
+                                $tablePrimaryKey = $this->primaryKeyColumns($dbTables[$foreignTableName]->name);
+                                $relatedPrimaryKey = $this->primaryKeyColumns($subForeignTableName);
+                                $pivotPrimaryKeyColumns = $this->primaryKeyColumns($dbTable->name);
 
-                                $foreignPivotKey = $tableIndexes['primary']->getColumns()[0];
-                                $relatedPivotKey = $relatedTableIndexes['primary']->getColumns()[0];
-                                $pivotPrimaryKey = isset($pivotIndexes['primary']) ? $pivotIndexes['primary']->getColumns()[0] : null;
+                                if ($tablePrimaryKey === [] || $relatedPrimaryKey === []) {
+                                    continue;
+                                }
+
+                                $foreignPivotKey = $tablePrimaryKey[0];
+                                $relatedPivotKey = $relatedPrimaryKey[0];
+                                $pivotPrimaryKey = $pivotPrimaryKeyColumns[0] ?? null;
 
                                 $pivotColumns = $this->getEntityColumns($dbTable->name);
                                 $pivotTimestamps = array_key_exists('created_at', $pivotColumns) && array_key_exists('updated_at', $pivotColumns);
@@ -354,7 +387,7 @@ trait DBALable
     public function getEntityColumns(string $entityName): array
     {
         if (! isset(self::$entityColumns[$entityName])) {
-            self::$entityColumns[$entityName] = $this->sm->listTableColumns($entityName);
+            self::$entityColumns[$entityName] = $this->dbal()->listTableColumns($this->sm, $entityName);
         }
 
         return self::$entityColumns[$entityName];
@@ -368,7 +401,7 @@ trait DBALable
     public function getEntityIndexes(string $entityName): array
     {
         if (! isset(self::$entityIndexes[$entityName])) {
-            self::$entityIndexes[$entityName] = $this->sm->listTableIndexes($entityName);
+            self::$entityIndexes[$entityName] = $this->dbal()->listTableIndexes($this->sm, $entityName);
         }
 
         return self::$entityIndexes[$entityName];

@@ -29,7 +29,7 @@ trait HasCasts
                 if (array_key_exists($column, (array) config('models-generator.enums_casting', []))) {
                     $type = '\\'.config('models-generator.enums_casting', [])[$column].'::class';
                 } elseif (in_array($column, $uriCasting)) {
-                    $type = '\\'.'Illuminate\Database\Eloquent\Casts\AsUri::class';
+                    $type = 'AsUri::class';
                 } elseif (array_key_exists($column, $jsonCasting)) {
                     $type = '\'array\'';
                 } else {

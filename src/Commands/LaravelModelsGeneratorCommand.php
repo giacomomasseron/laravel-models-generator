@@ -261,6 +261,15 @@ class LaravelModelsGeneratorCommand extends Command
                 );
             }
 
+            if (resolveLaravelVersion()->check(12)) {
+                $uriCasting = config('models-generator.uri_casting', [])[$dbEntity->name] ?? [];
+                foreach ($dbEntity->casts as $column => $type) {
+                    if (in_array($column, $uriCasting)) {
+                        $arImports[] = 'Illuminate\Database\Eloquent\Casts\AsUri';
+                    }
+                }
+            }
+
             $dbEntity->imports = array_merge($dbEntity->imports, $arImports);
             $dbEntity->traits = array_merge($dbEntity->traits, $traits);
 

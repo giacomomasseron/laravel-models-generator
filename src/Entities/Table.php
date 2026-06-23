@@ -77,7 +77,7 @@ class Table extends Entity
             $belongsTo->foreignColumnName = $foreignColumnName;
             $belongsTo->localColumnName = $localColumnName;
 
-            $this->belongsTo[$belongsTo->foreignKey->getName()] = $belongsTo;
+            $this->belongsTo[$this->dbalVersion->getForeignKeyName($belongsTo->foreignKey)] = $belongsTo;
 
             $this->properties[] = new Property('$'.$belongsTo->name, $belongsTo->foreignClassName, false);
         }
