@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Laravel14;
+
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel10\HasBooted;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel10\HasGlobalScopesAsAttribute;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel10\HasObserver;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel11\HasBelongsToMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel11\HasBelongTo;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel11\HasHasMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel11\HasMorphTo;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel12\HasCasts;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel12\HasQueryBuilder;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel13\HasAttributes;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel13\HasConnection;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel13\HasFillables;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel13\HasHidden;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel13\HasPrimaryKey;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel14\HasDefaultValues;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasAbstract;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasImports;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasMorphMany;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasParent;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasProperties;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasTraits;
+use GiacomoMasseroni\LaravelModelsGenerator\Concerns\Model\Laravel9\HasUuids;
+use GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\WriterInterface;
+
+class Writer extends \GiacomoMasseroni\LaravelModelsGenerator\Writers\Model\Writer implements WriterInterface
+{
+    use HasAbstract;
+    use HasAttributes;
+    use HasBelongsToMany;
+    use HasBelongTo;
+    use HasBooted;
+    use HasCasts;
+    use HasConnection;
+    use HasDefaultValues;
+    use HasFillables;
+    use HasGlobalScopesAsAttribute;
+    use HasHasMany;
+    use HasHidden;
+    use HasImports;
+    use HasMorphMany;
+    use HasMorphTo;
+    use HasObserver;
+    use HasParent;
+    use HasPrimaryKey;
+    use HasProperties;
+    use HasQueryBuilder;
+    use HasTraits;
+    use HasUuids;
+
+    public function table(): string
+    {
+        return '';
+    }
+
+    public function timestamps(): string
+    {
+        return '';
+    }
+}
