@@ -24,7 +24,7 @@ trait HasDefaultValues
             $body .= str_repeat($this->spacer, 2).'return ['."\n";
             foreach ($this->entity->properties as $property) {
                 if (! is_null($property->defaultValue)) {
-                    $body .= str_repeat($this->spacer, 2).'\''.$property->getFieldForDefaultValue().'\' => \''.$property->defaultValue.'\','."\n";
+                    $body .= str_repeat($this->spacer, 3).var_export($property->getFieldForDefaultValue(), true).' => '.var_export($property->defaultValue, true).','."\n";
                 }
             }
             $body .= str_repeat($this->spacer, 2).'];'."\n";
