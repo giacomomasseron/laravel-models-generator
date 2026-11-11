@@ -57,8 +57,8 @@ class Connector extends DriverConnector implements DriverConnectorInterface
         /** @var Column $column */
         foreach ($columns as $column) {
             $columnName = $this->dbal()->getColumnName($column);
-            $laravelColumnType = $this->laravelColumnType($this->mapColumnType($column->getType()), $dbView);
-            $dbView->casts[$columnName] = $this->laravelColumnTypeForCast($this->mapColumnType($column->getType()), $dbView);
+            $laravelColumnType = $this->laravelColumnType($this->mapColumnType($this->dbal()->getColumnType($column)), $dbView);
+            $dbView->casts[$columnName] = $this->laravelColumnTypeForCast($this->mapColumnType($this->dbal()->getColumnType($column)), $dbView);
 
             $properties[] = new Property(
                 '$'.$columnName,

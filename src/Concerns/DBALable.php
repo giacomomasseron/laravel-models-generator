@@ -130,7 +130,7 @@ trait DBALable
                 $primaryKeyName = $primaryKeyColumns[0];
                 foreach ($columns as $column) {
                     if ($column->getName() == $primaryKeyName) {
-                        $dbTable->primaryKey = new PrimaryKey($primaryKeyName, $column->getAutoincrement(), $this->laravelColumnType($this->mapColumnType($column->getType())));
+                        $dbTable->primaryKey = new PrimaryKey($primaryKeyName, $column->getAutoincrement(), $this->laravelColumnType($this->mapColumnType($this->dbal()->getColumnType($column))));
                     }
                     break;
                 }
@@ -178,8 +178,8 @@ trait DBALable
             /** @var Column $column */
             foreach ($columns as $column) {
                 $columnName = $this->dbal()->getColumnName($column);
-                $laravelColumnType = $this->laravelColumnType($this->mapColumnType($column->getType()), $dbTable);
-                $dbTable->casts[$columnName] = $this->laravelColumnTypeForCast($this->mapColumnType($column->getType()), $dbTable);
+                $laravelColumnType = $this->laravelColumnType($this->mapColumnType($this->dbal()->getColumnType($column)), $dbTable);
+                $dbTable->casts[$columnName] = $this->laravelColumnTypeForCast($this->mapColumnType($this->dbal()->getColumnType($column)), $dbTable);
 
                 $properties[] = new Property(
                     '$'.$columnName,

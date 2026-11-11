@@ -9,6 +9,7 @@ use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DBALInterface;
 
 class DBAL implements DBALInterface
@@ -84,6 +85,11 @@ class DBAL implements DBALInterface
     public function getColumnName(Column $column): string
     {
         return $column->getObjectName()->getIdentifier()->getValue();
+    }
+
+    public function getColumnType(Column $column): Type
+    {
+        return Type::getType($column->getTypeName());
     }
 
     public function getForeignKeyName(ForeignKeyConstraint $foreignKeyConstraint): string

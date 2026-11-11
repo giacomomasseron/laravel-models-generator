@@ -8,6 +8,7 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 use GiacomoMasseroni\LaravelModelsGenerator\Contracts\DBALInterface;
 
 class DBAL implements DBALInterface
@@ -71,6 +72,12 @@ class DBAL implements DBALInterface
     {
         // @phpstan-ignore-next-line
         return $column->getName();
+    }
+
+    public function getColumnType(Column $column): Type
+    {
+        // @phpstan-ignore-next-line
+        return $column->getType();
     }
 
     public function getForeignKeyName(ForeignKeyConstraint $foreignKeyConstraint): string
