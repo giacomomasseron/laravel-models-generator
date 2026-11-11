@@ -10,6 +10,7 @@ use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 
 interface DBALInterface
 {
@@ -58,6 +59,8 @@ interface DBALInterface
     public function getTableName(Table $table): string;
 
     public function getColumnName(Column $column): string;
+
+    public function getColumnType(Column $column): Type;
 
     public function getForeignKeyName(ForeignKeyConstraint $foreignKeyConstraint): string;
 }
