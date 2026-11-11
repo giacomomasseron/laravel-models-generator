@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v3.1.0 - 2026-11-11
+
+### Features
+
+- Replace the deprecated `Column::getType()` call for DBAL v4.5
+- Raise the minimum `doctrine/dbal` v4 version to 4.5 (DBAL v3 support is unchanged)
+
 ## v3.0.1 - 2026-06-23
 
 ### Features
