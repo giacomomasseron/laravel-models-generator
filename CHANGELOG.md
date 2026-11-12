@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-models-generator` will be documented in this file.
 
+## v3.1.1 - 2026-11-11
+
+### Features
+
+- Fix primary key detection when the primary key is not the first column of the table
+
 ## v3.1.0 - 2026-11-11
 
 ### Features

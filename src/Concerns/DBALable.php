@@ -129,10 +129,11 @@ trait DBALable
             if ($primaryKeyColumns !== []) {
                 $primaryKeyName = $primaryKeyColumns[0];
                 foreach ($columns as $column) {
-                    if ($column->getName() == $primaryKeyName) {
+                    if ($this->dbal()->getColumnName($column) == $primaryKeyName) {
                         $dbTable->primaryKey = new PrimaryKey($primaryKeyName, $column->getAutoincrement(), $this->laravelColumnType($this->mapColumnType($this->dbal()->getColumnType($column))));
+
+                        break;
                     }
-                    break;
                 }
             }
             $dbTable->fillable = array_filter(
